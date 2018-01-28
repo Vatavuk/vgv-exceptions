@@ -13,3 +13,6 @@ new Try(
         new Array<>(FileNotFoundException.class, IOException.class),
         exp -> { throw new IllegalStateException(exp) })
     ).valueOf( () -> entities.fetch("someId"));
+```
+
+More concrete examples to be added soon...
