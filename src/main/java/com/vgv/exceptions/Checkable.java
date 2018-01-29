@@ -31,28 +31,21 @@ import org.cactoos.Scalar;
  * @version $Id$
  * @since 1.0
  */
-public interface Checkable {
+public interface Checkable<E extends Exception> {
 
     /**
-     * Get value from scalar operation through exception handling.
+     * Execute function through exception handling.
      * @param scalar Scalar
      * @param <T> Scalar type
      * @return Scalar value
      * @throws Exception Exception
      */
-    <T> T valueOf(Scalar<T> scalar) throws Exception;
+    <T> T exec(Scalar<T> scalar) throws E;
 
     /**
-     * Execute given void function through exception handling.
+     * Execute void procedure through exception handling.
      * @param proc Proc
      * @throws Exception Exception
      */
-    void exec(VoidProc proc) throws Exception;
-
-    /**
-     * Handle exception.
-     * @param exception Exception
-     * @throws Exception Exception
-     */
-    void handle(Exception exception) throws Exception;
+    void exec(VoidProc proc) throws E;
 }

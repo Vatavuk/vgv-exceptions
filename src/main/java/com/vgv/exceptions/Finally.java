@@ -23,39 +23,29 @@
  */
 package com.vgv.exceptions;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-
 /**
- * VoidProc that doesn't throw checked {@link Exception}..
- *
- * <p>There is no thread-safety guarantee.
- *
+ * Finally.
  * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
  * @version $Id$
- * @since 0.28.2
+ * @since 1.0
  */
-public class UncheckedVoidProc implements VoidProc {
+public class Finally implements VoidProc {
 
     /**
-     * Original void proc.
+     * Void procedure original.
      */
     private final VoidProc origin;
 
     /**
      * Ctor.
-     * @param proc Encapsulated func
+     * @param vproc Void procedure
      */
-    public UncheckedVoidProc(final VoidProc proc) {
-        this.origin = proc;
+    public Finally(final VoidProc vproc) {
+        this.origin = vproc;
     }
 
     @Override
     public void exec() {
-        try {
-            this.origin.exec();
-        } catch (final Exception exp) {
-            throw new UncheckedIOException(new IOException(exp));
-        }
+        new UncheckedVoidProc(this.origin).exec();
     }
 }

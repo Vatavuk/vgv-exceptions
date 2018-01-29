@@ -23,33 +23,27 @@
  */
 package com.vgv.exceptions;
 
-import org.cactoos.Scalar;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
 /**
- * UncheckedExceptionControl.
- * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
+ * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0
  */
-public interface UncheckedCheckable {
+public final class FinallyTest {
 
     /**
-     * Get value from scalar operation through exception handling.
-     * @param scalar Scalar
-     * @param <T> Scalar type
-     * @return Scalar value
+     * Executes void function as finally statement.
      */
-    <T> T valueOf(Scalar<T> scalar);
-
-    /**
-     * Execute given void function through exception handling.
-     * @param proc Proc
-     */
-    void exec(VoidProc proc);
-
-    /**
-     * Handle exception.
-     * @param exception Exception
-     */
-    void handle(Exception exception);
+    @Test
+    public void executeVoidFunction() {
+        final FakeOperations operations = new FakeOperations();
+        new Finally(operations::exec).exec();
+        MatcherAssert.assertThat(
+            operations.isExecuted(),
+            Matchers.equalTo(true)
+        );
+    }
 }

@@ -24,16 +24,15 @@
 package com.vgv.exceptions;
 
 import com.jcabi.immutable.Array;
-import org.cactoos.Proc;
-import org.cactoos.Scalar;
+import java.util.function.Consumer;
 
 /**
- * TryWith.
+ * Catch.
  * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0
  */
-public final class TryWith implements Checkable {
+public final class Catch implements Catchable {
 
     /**
      * List of classes.
@@ -43,18 +42,17 @@ public final class TryWith implements Checkable {
     /**
      * List of process that handle an exception.
      */
-    private final Proc<Exception> process;
+    private final Consumer<Exception> consumer;
 
     /**
      * Ctor.
-     * @param cls Class
-     * @param proc Proc
-     * @param <T> Type of exception
+     * @param cls
+     * @param consumer
+     * @param <T>
      */
-    @SuppressWarnings("unchecked")
-    public <T extends Exception> TryWith(final Class<T> cls,
-        final Proc<T> proc) {
-        this(new Array<>(cls), (Proc<Exception>) proc);
+    public <T extends Exception> Catch(final Class<T> cls,
+        final Consumer<T> consumer) {
+        this(new Array<>(cls), (Consumer<Exception>) consumer);
     }
 
     /**
@@ -62,40 +60,16 @@ public final class TryWith implements Checkable {
      * @param classes List of classes
      * @param consumer Process that handles an exception
      */
-    public TryWith(final Array<Class<?>> classes,
-        final Proc<Exception> consumer) {
+    public Catch(final Array<Class<?>> classes,
+        final Consumer<Exception> consumer) {
         this.classes = new Array<>(classes);
-        this.process = consumer;
+        this.consumer = consumer;
     }
 
     @Override
-    @SuppressWarnings("PMD.AvoidCatchingGenericException")
-    public <T> T valueOf(final Scalar<T> scalar) throws Exception {
-        try {
-            return scalar.value();
-            // @checkstyle IllegalCatchCheck (1 line)
-        } catch (final Exception exception) {
-            this.handle(exception);
-            throw exception;
-        }
-    }
-
-    @Override
-    @SuppressWarnings("PMD.AvoidCatchingGenericException")
-    public void exec(final VoidProc proc) throws Exception {
-        try {
-            proc.exec();
-            // @checkstyle IllegalCatchCheck (1 line)
-        } catch (final Exception exception) {
-            this.handle(exception);
-            throw exception;
-        }
-    }
-
-    @Override
-    public void handle(final Exception exception) throws Exception {
+    public void handle(final Exception exception) {
         if (this.supports(exception)) {
-            this.process.exec(exception);
+            this.consumer.accept(exception);
         }
     }
 
@@ -104,10 +78,11 @@ public final class TryWith implements Checkable {
      * @param exception Exception
      * @return Boolean
      */
-    private boolean supports(final Exception exception) {
+    @Override
+    public boolean supports(final Exception exception) {
         boolean supports = false;
         for (final Class<?> cls : this.classes) {
-            if (cls.equals(exception.getClass())) {
+            if (cls.isInstance(exception)) {
                 supports = true;
                 break;
             }

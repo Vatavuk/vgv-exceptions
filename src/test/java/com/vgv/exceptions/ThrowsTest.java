@@ -23,41 +23,24 @@
  */
 package com.vgv.exceptions;
 
-import org.cactoos.Scalar;
+import java.io.IOException;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
 /**
- * TryTemplate.
- * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
+ * ThrowsTest.
+ * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0
  */
-public class TryTemplate implements Checkable {
+public final class ThrowsTest {
 
-    /**
-     * Exception control origin.
-     */
-    private final Checkable origin;
-
-    /**
-     * Ctor.
-     * @param control Exception control
-     */
-    public TryTemplate(final Checkable control) {
-        this.origin = control;
-    }
-
-    @Override
-    public final <T> T valueOf(final Scalar<T> scalar) throws Exception {
-        return this.origin.valueOf(scalar);
-    }
-
-    @Override
-    public final void exec(final VoidProc proc) throws Exception {
-        this.origin.exec(proc);
-    }
-
-    @Override
-    public final void handle(final Exception exception) throws Exception {
-        this.origin.handle(exception);
+    @Test
+    public void wrapsExceptionAsIOException() {
+        MatcherAssert.assertThat(
+            new Throws<>(IOException::new).apply(new Exception("msg")),
+            Matchers.instanceOf(IOException.class)
+        );
     }
 }
