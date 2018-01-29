@@ -76,13 +76,13 @@ public final class TryTest {
     }
 
     @Test
-    public void executesFinallyblock() throws Exception {
+    public void executesFinallyBlock() throws Exception {
         final FakeOperations operations = new FakeOperations();
         new Try().with(operations::exec).exec(() -> new FakeOperations().exec());
     }
 
     @Test
-    public void getsFunctionResultAndExecutesFinallyBlock() throws Exception {
+    public void getsScalarResultAndExecutesFinallyBlock() throws Exception {
         final FakeOperations operations = new FakeOperations();
         final int expected = 1;
         final int result = new Try().with(
@@ -94,7 +94,7 @@ public final class TryTest {
     }
 
     @Test(expected = IOException.class)
-    public void mapsExceptionToIOExceptionForScalarExecution()
+    public void scalarExecutionEndsUpWithIOException()
         throws IOException {
         new Try().with(new Throws<>(IOException::new))
             .exec(() -> {
@@ -103,24 +103,40 @@ public final class TryTest {
     }
 
     @Test(expected = IOException.class)
-    public void mapsExceptionToIOExceptionForProcedureExecution()
+    public void procedureExecutionEndsUpWithIOException()
         throws IOException {
         new Try().with(new Throws<>(IOException::new))
             .exec(this::throwException);
     }
 
     @Test(expected = IllegalStateException.class)
-    public void runtimeExceptionGoesOutForProcedureExecution()
-        throws IOException{
+    public void procedureExecutionEndsUpWithRuntimeException()
+        throws IOException {
         new Try().with(new Throws<>(IOException::new))
             .exec(this::throwRuntimeException);
     }
 
     @Test(expected = IllegalStateException.class)
-    public void runtimeExceptionGoesOutForScalarExecution() throws IOException{
+    public void scalarExecutionEndsUpWithRuntimeExecution() throws IOException {
         new Try().with(new Throws<>(IOException::new))
             .exec(() -> {
                 throw new IllegalStateException("illegal");
+            });
+    }
+
+    @Test(expected = CustomException.class)
+    public void fullExceptionControl() throws CustomException {
+        new Try(
+            new Catch(
+                IllegalStateException.class,
+                e -> new FakeOperations().exec()
+            )
+        ).with(
+            new Finally(() -> new FakeOperations().exec()),
+            new Throws<>(TryTest.CustomException::new)
+        )
+            .exec(() -> {
+                throw new IllegalStateException("msg");
             });
     }
 
@@ -131,4 +147,12 @@ public final class TryTest {
     private void throwException() throws Exception {
         throw new Exception("exception");
     }
+
+    private static class CustomException extends Exception {
+        CustomException(Exception exception) {
+            super(exception);
+        }
+    }
+
+    ;
 }
