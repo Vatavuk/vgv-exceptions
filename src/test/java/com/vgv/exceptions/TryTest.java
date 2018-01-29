@@ -94,7 +94,8 @@ public final class TryTest {
     }
 
     @Test(expected = IOException.class)
-    public void mapsExceptionToIOException() throws IOException {
+    public void mapsExceptionToIOExceptionForScalarExecution()
+        throws IOException {
         new Try().with(new Throws<>(IOException::new))
             .exec(() -> {
                 throw new Exception("exception");
@@ -102,8 +103,10 @@ public final class TryTest {
     }
 
     @Test(expected = IOException.class)
-    public void mapsRuntimeExceptionToIOException() throws IOException {
-
+    public void mapsExceptionToIOExceptionForProcedureExecution()
+        throws IOException {
+        new Try().with(new Throws<>(IOException::new))
+            .exec(this::throwException);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -123,5 +126,9 @@ public final class TryTest {
 
     private void throwRuntimeException() {
         throw new IllegalStateException("illegal state");
+    }
+
+    private void throwException() throws Exception {
+        throw new Exception("exception");
     }
 }
