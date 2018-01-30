@@ -3,8 +3,9 @@ Library converts try/catch/finally statements into reusable objects.
 
 ## Usage
 
-Lets assume following simplified scenario (Fetching entity from DB). MyAppException,
-ClientException and DatabaseException are checked exceptions.
+Lets assume following simplified scenario (Fetching entity from DB).
+Checked exceptions: MyAppException, ClientException and DatabaseException
+Runtime exceptions: ValidationException, IllegalStateException
 ```java
 public Entity getEntity(String id) throws MyAppException {
     try {
@@ -48,3 +49,30 @@ public Entity getEntity(String id) throws MyAppException {
 ```
 Declared Throws instance maps any checked exception to MyAppException and specified
 runtime exceptions (in the above case ValidationException and IllegalStateException) to MyAppException. Exceptions like NullPointerException etc... are not mapped.
+
+There are two ways to avoid throwing checked exceptions:
+```java
+public Entity getEntity(String id) {
+    return
+        new Try(
+            ...
+        ).with(new Throws(MyAppRuntimeException::new)
+        ).exec(() -> entities.get(id));
+}
+```
+or
+```java
+public Entity getEntity(String id) {
+    return
+        new UncheckedTry(
+            new Try(
+                ...
+            )
+        ).exec(() -> entities.get(id));
+}
+```
+## What are benefits of using OO style exception handling?
+    * Declarative instead of procedural code. Easier to maintain, extend and test
+    * Classes can be decoupled from exception handling
+    * SRP compliant
+    * Reusable
