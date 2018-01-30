@@ -24,7 +24,8 @@
 package com.vgv.exceptions;
 
 /**
- * Catchable.
+ * Exception handling in catch block.
+ *
  * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0

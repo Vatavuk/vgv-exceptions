@@ -28,13 +28,13 @@ import java.io.UncheckedIOException;
 import org.cactoos.Scalar;
 
 /**
- * Exception control decorator that does not throw checked {@link Exception}.
+ * Exception control that does not throw checked {@link Exception}.
  *
  * <p>There is no thread-safety guarantee.
  *
  * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
  * @version $Id$
- * @since 0.28.2
+ * @since 1.0
  */
 public final class UncheckedTry implements Checkable<Exception> {
 

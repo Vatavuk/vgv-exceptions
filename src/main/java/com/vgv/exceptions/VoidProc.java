@@ -26,15 +26,14 @@ package com.vgv.exceptions;
 /**
  * Void procedure.
  *
- *  * <p>If you don't want to have any checked exceptions being thrown
+ * <p>If you don't want to have any checked exceptions being thrown
  * out of your {@link VoidProc}, you can use
  * {@link com.vgv.exceptions.UncheckedVoidProc} decorator.</p>
  *
- * <p>There is no thread-safety guarantee.
  *
  * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
  * @version $Id$
- * @since 0.28.2
+ * @since 1.0
  */
 public interface VoidProc {
 

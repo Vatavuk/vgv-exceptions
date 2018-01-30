@@ -27,13 +27,13 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 
 /**
- * VoidProc that doesn't throw checked {@link Exception}..
+ * VoidProc that doesn't throw checked {@link Exception}.
  *
  * <p>There is no thread-safety guarantee.
  *
  * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
  * @version $Id$
- * @since 0.28.2
+ * @since 1.0
  */
 public final class UncheckedVoidProc implements VoidProc {
 

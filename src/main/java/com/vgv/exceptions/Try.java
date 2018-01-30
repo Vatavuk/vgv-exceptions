@@ -34,6 +34,8 @@ import org.cactoos.Scalar;
  * out of your {@link Try}, you can use
  * {@link com.vgv.exceptions.UncheckedTry} decorator.
  *
+ * <p>There is no thread-safety guarantee.
+ *
  * <p>This is how you're supposed to use it:
  *
  * <pre> new Try(
@@ -57,7 +59,7 @@ import org.cactoos.Scalar;
  * </pre>
  * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
  * @version $Id$
- * @since 0.28.2
+ * @since 1.0
  */
 @SuppressWarnings("PMD.TooManyMethods")
 public final class Try implements Checkable<Exception> {

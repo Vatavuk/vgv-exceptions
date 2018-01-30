@@ -27,7 +27,10 @@ import com.jcabi.immutable.Array;
 import java.util.function.Consumer;
 
 /**
- * Catch.
+ * Exception handling in catch block.
+ *
+ * <p>There is no thread-safety guarantee.
+ *
  * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0

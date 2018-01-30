@@ -26,7 +26,8 @@ package com.vgv.exceptions;
 import org.cactoos.Scalar;
 
 /**
- * ExceptionControl.
+ * Exception control.
+ *
  * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @param <E> Extends Exception

@@ -26,7 +26,10 @@ package com.vgv.exceptions;
 import java.util.function.Function;
 
 /**
- * Throws.
+ * Throws statement.
+ *
+ * <p>There is no thread-safety guarantee.
+ *
  * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @param <E> Extends Exception
