@@ -46,7 +46,8 @@ import org.cactoos.Scalar;
  *             e -> LOGGER.error("client exception", e)
  *         ),
  *         new Catch(
- *             new Array<>(IllegalStateException.class, ValidationException.class),
+ *             new Array<>(IllegalStateException.class,
+ *                  ValidationException.class),
  *             e -> LOGGER.error("Validation exception", e)
  *         )
  *      ).with(
@@ -54,11 +55,11 @@ import org.cactoos.Scalar;
  *            new Throws<>(IOException::new)
  *      ).valueOf(() -> doSomething());
  * </pre>
- *
  * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 0.28.2
  */
+@SuppressWarnings("PMD.TooManyMethods")
 public final class Try implements Checkable<Exception> {
 
     /**
@@ -110,20 +111,20 @@ public final class Try implements Checkable<Exception> {
      * Creates new exception control object with additional handling of finally
      * statement.
      * @param fnly Finally proc
-     * @return Checkable<Exception> Exception control
+     * @return Checkable Checkable
      */
-    public Checkable<Exception> with(VoidProc fnly) {
+    public Checkable<Exception> with(final VoidProc fnly) {
         return new Try.WithFinally<>(this, fnly);
     }
 
     /**
-     * Creates new exception control object that throws specified user exception.
+     * Creates new exception control object that throws specified exception.
      * @param thrws Throws function.
      * @param <T> Extends Exception
-     * @return Checkable<T> Exception control
+     * @return Checkable Checkable
      */
     public <T extends Exception> Checkable<T> with(
-        Function<Exception, T> thrws) {
+        final Function<Exception, T> thrws) {
         return new Try.WithThrows<>(thrws, this.catchables);
     }
 
@@ -133,7 +134,7 @@ public final class Try implements Checkable<Exception> {
      * @param fnly Finally
      * @param thrws Throws
      * @param <T> Extends Exception
-     * @return Checkable<T> Exception control
+     * @return Checkable Checkable
      */
     public <T extends Exception> Checkable<T> with(final VoidProc fnly,
         final Function<Exception, T> thrws) {
@@ -144,7 +145,7 @@ public final class Try implements Checkable<Exception> {
     }
 
     /**
-     * Handles exception
+     * Handles exception.
      * @param exception Exception
      */
     private void handle(final Exception exception) {
@@ -157,8 +158,8 @@ public final class Try implements Checkable<Exception> {
      * Exception control decorator that throws specific Exception.
      * @param <E> Extends Exception
      */
-    private static class WithThrows<E extends Exception>
-        implements Checkable<E> {
+    private static class WithThrows<E extends Exception> implements
+        Checkable<E> {
 
         /**
          * Function that wraps generic exception to a specific one.
@@ -182,6 +183,7 @@ public final class Try implements Checkable<Exception> {
         }
 
         @Override
+        @SuppressWarnings("PMD.AvoidCatchingGenericException")
         public <T> T exec(final Scalar<T> scalar) throws E {
             try {
                 return scalar.value();
@@ -189,12 +191,15 @@ public final class Try implements Checkable<Exception> {
             } catch (final RuntimeException exception) {
                 this.handleUncheckedExp(exception);
                 throw exception;
+                // @checkstyle IllegalCatchCheck (1 line)
             } catch (final Exception exception) {
-                return this.handleCheckedExp(exception);
+                this.handleCheckedExp(exception);
+                throw this.fun.apply(exception);
             }
         }
 
         @Override
+        @SuppressWarnings("PMD.AvoidCatchingGenericException")
         public void exec(final VoidProc proc) throws E {
             try {
                 proc.exec();
@@ -202,31 +207,41 @@ public final class Try implements Checkable<Exception> {
             } catch (final RuntimeException exception) {
                 this.handleUncheckedExp(exception);
                 throw exception;
+                // @checkstyle IllegalCatchCheck (1 line)
             } catch (final Exception exception) {
                 this.handleCheckedExp(exception);
-            }
-        }
-
-        private <T> T handleCheckedExp(final Exception exception) throws E {
-            this.catchables.forEach(catchable -> catchable.handle(exception));
-            throw this.fun.apply(exception);
-        }
-
-        private void handleUncheckedExp(final RuntimeException exception)
-            throws E {
-            if(this.catchables.stream().anyMatch(
-                catchable -> catchable.supports(exception))) {
-                this.catchables.forEach(
-                    catchable -> catchable.handle(exception));
                 throw this.fun.apply(exception);
             }
         }
 
+        /**
+         * Handles checked exception.
+         * @param exception Exception
+         */
+        private void handleCheckedExp(final Exception exception) {
+            this.catchables.forEach(catchable -> catchable.handle(exception));
+        }
+
+        /**
+         * Handles unchecked exception.
+         * @param exception Exception
+         * @throws E Extends Exception
+         */
+        private void handleUncheckedExp(final RuntimeException exception)
+            throws E {
+            if (this.catchables.stream().anyMatch(
+                catchable -> catchable.supports(exception)
+            )) {
+                this.catchables.forEach(
+                    catchable -> catchable.handle(exception)
+                );
+                throw this.fun.apply(exception);
+            }
+        }
     }
 
     /**
-     * Exception control decorator that controls finally statement block
-     * functionality.
+     * Exception control decorator that controls finally block.
      * @param <E> Extends Exception
      */
     private static class WithFinally<E extends Exception> implements

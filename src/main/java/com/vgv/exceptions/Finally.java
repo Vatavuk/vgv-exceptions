@@ -29,10 +29,10 @@ package com.vgv.exceptions;
  * @version $Id$
  * @since 1.0
  */
-public class Finally implements VoidProc {
+public final class Finally implements VoidProc {
 
     /**
-     * Void procedure original.
+     * Void procedure origin.
      */
     private final VoidProc origin;
 

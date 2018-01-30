@@ -40,6 +40,7 @@ public interface VoidProc {
 
     /**
      * Execute it.
+     * @throws Exception Exception
      */
     void exec() throws Exception;
 }

@@ -46,9 +46,9 @@ public final class Catch implements Catchable {
 
     /**
      * Ctor.
-     * @param cls
-     * @param consumer
-     * @param <T>
+     * @param cls Class
+     * @param consumer Consumer that handles an exception
+     * @param <T> Extends Exception
      */
     public <T extends Exception> Catch(final Class<T> cls,
         final Consumer<T> consumer) {
@@ -58,7 +58,7 @@ public final class Catch implements Catchable {
     /**
      * Ctor.
      * @param classes List of classes
-     * @param consumer Process that handles an exception
+     * @param consumer Consumer that handles an exception
      */
     public Catch(final Array<Class<?>> classes,
         final Consumer<Exception> consumer) {
@@ -73,11 +73,6 @@ public final class Catch implements Catchable {
         }
     }
 
-    /**
-     * Checks if exception control instance handles given exception.
-     * @param exception Exception
-     * @return Boolean
-     */
     @Override
     public boolean supports(final Exception exception) {
         boolean supports = false;

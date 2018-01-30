@@ -29,6 +29,7 @@ import org.cactoos.Scalar;
  * ExceptionControl.
  * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
  * @version $Id$
+ * @param <E> Extends Exception
  * @since 1.0
  */
 public interface Checkable<E extends Exception> {

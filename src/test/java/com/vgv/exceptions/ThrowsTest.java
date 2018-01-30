@@ -29,15 +29,18 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
- * ThrowsTest.
+ * Test case for {@link Throws}.
  * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0
  */
 public final class ThrowsTest {
 
+    /**
+     * Wrap Exception instance to IOException.
+     */
     @Test
-    public void wrapsExceptionAsIOException() {
+    public void wrapsExceptionAsIoException() {
         MatcherAssert.assertThat(
             new Throws<>(IOException::new).apply(new Exception("msg")),
             Matchers.instanceOf(IOException.class)

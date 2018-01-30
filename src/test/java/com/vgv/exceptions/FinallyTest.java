@@ -28,6 +28,7 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
+ * Test case for {@link Finally}.
  * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0

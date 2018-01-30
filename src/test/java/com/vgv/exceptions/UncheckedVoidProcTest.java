@@ -23,33 +23,31 @@
  */
 package com.vgv.exceptions;
 
-import java.util.function.Function;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import org.junit.Test;
 
 /**
- * Throws.
- * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
+ * Test case for {@link UncheckedVoidProc}.
+ * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
- * @param <E> Extends Exception
  * @since 1.0
  */
-public final class Throws<E extends Exception> implements
-    Function<Exception, E> {
+public final class UncheckedVoidProcTest {
 
     /**
-     * Function origin.
+     * Void procedure throws runtime exception.
      */
-    private final Function<Exception, E> origin;
-
-    /**
-     * Ctor.
-     * @param fun Function
-     */
-    public Throws(final Function<Exception, E> fun) {
-        this.origin = fun;
+    @Test(expected = UncheckedIOException.class)
+    public void runtimeExceptionGoesOut() {
+        new UncheckedVoidProc(UncheckedVoidProcTest::throwException).exec();
     }
 
-    @Override
-    public E apply(final Exception exp) {
-        return this.origin.apply(exp);
+    /**
+     * Throw IOException.
+     * @throws IOException IOException
+     */
+    private static void throwException() throws IOException {
+        throw new IOException("exception");
     }
 }

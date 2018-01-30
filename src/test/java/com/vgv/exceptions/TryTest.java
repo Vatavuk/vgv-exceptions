@@ -30,15 +30,20 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
- * TryTest.
+ * Test case for {@link Try}.
  * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0
  */
+@SuppressWarnings("PMD.TooManyMethods")
 public final class TryTest {
 
+    /**
+     * Handle checked exception.
+     */
     @Test
-    public void handlesCheckedException() throws Exception {
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
+    public void handlesCheckedException() {
         final FakeOperations operations = new FakeOperations();
         try {
             new Try(
@@ -46,10 +51,13 @@ public final class TryTest {
                     IOException.class,
                     e -> operations.exec()
                 )
-            ).exec(() -> {
-                throw new FileNotFoundException("file not found");
-            });
-        } catch (final Exception e) {
+            ).exec(
+                () -> {
+                    throw new FileNotFoundException("file not found");
+                });
+                // @checkstyle IllegalCatchCheck (1 line)
+        } catch (final Exception exp) {
+            TryTest.doNothing();
         }
         MatcherAssert.assertThat(
             operations.isExecuted(),
@@ -57,7 +65,12 @@ public final class TryTest {
         );
     }
 
+    /**
+     * Handle runtime exception.
+     * @throws Exception Exception
+     */
     @Test
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public void handlesUncheckedException() throws Exception {
         final FakeOperations operations = new FakeOperations();
         try {
@@ -67,7 +80,9 @@ public final class TryTest {
                     e -> operations.exec()
                 )
             ).exec(this::throwRuntimeException);
-        } catch (final Exception e) {
+                // @checkstyle IllegalCatchCheck (1 line)
+        } catch (final Exception exp) {
+            TryTest.doNothing();
         }
         MatcherAssert.assertThat(
             operations.isExecuted(),
@@ -75,84 +90,158 @@ public final class TryTest {
         );
     }
 
+    /**
+     * Execute finally block.
+     * @throws Exception Exception
+     */
     @Test
     public void executesFinallyBlock() throws Exception {
         final FakeOperations operations = new FakeOperations();
-        new Try().with(operations::exec).exec(() -> new FakeOperations().exec());
+        new Try().with(new Finally(operations::exec))
+            .exec(() -> new FakeOperations().exec());
+        MatcherAssert.assertThat(
+            operations.isExecuted(),
+            Matchers.equalTo(true)
+        );
     }
 
+    /**
+     * Scalar execution returns result and finally block is triggered.
+     * @throws Exception Exception
+     */
     @Test
     public void getsScalarResultAndExecutesFinallyBlock() throws Exception {
         final FakeOperations operations = new FakeOperations();
         final int expected = 1;
         final int result = new Try().with(
-            new Finally(operations::exec)).exec(() -> 1);
+            new Finally(operations::exec)
+        ).exec(() -> 1);
         MatcherAssert.assertThat(
             result,
             Matchers.equalTo(expected)
         );
+        MatcherAssert.assertThat(
+            operations.isExecuted(),
+            Matchers.equalTo(true)
+        );
     }
 
+    /**
+     * Scalar execution throws Exception and is mapped to IOException.
+     * @throws IOException IOException
+     */
     @Test(expected = IOException.class)
-    public void scalarExecutionEndsUpWithIOException()
+    public void scalarExecutionThrowsIoException()
         throws IOException {
         new Try().with(new Throws<>(IOException::new))
-            .exec(() -> {
-                throw new Exception("exception");
-            });
+            .exec(
+                () -> {
+                    throw new Exception("exp");
+                });
     }
 
+    /**
+     * Procedure execution throws Exception and is mapped to IOException.
+     * @throws IOException IOException
+     */
     @Test(expected = IOException.class)
-    public void procedureExecutionEndsUpWithIOException()
+    public void procedureExecutionThrowsIoException()
         throws IOException {
         new Try().with(new Throws<>(IOException::new))
             .exec(this::throwException);
     }
 
+    /**
+     * Procedure execution throws runtime exception and goes through.
+     * @throws IOException IOException
+     */
     @Test(expected = IllegalStateException.class)
-    public void procedureExecutionEndsUpWithRuntimeException()
+    public void procedureExecutionThrowsRuntimeException()
         throws IOException {
         new Try().with(new Throws<>(IOException::new))
             .exec(this::throwRuntimeException);
     }
 
+    /**
+     * Scalar execution throws runtime exception and goes through.
+     * @throws IOException IOException
+     */
     @Test(expected = IllegalStateException.class)
-    public void scalarExecutionEndsUpWithRuntimeExecution() throws IOException {
+    public void scalarExecutionThrowsRuntimeExecution() throws IOException {
         new Try().with(new Throws<>(IOException::new))
-            .exec(() -> {
-                throw new IllegalStateException("illegal");
-            });
+            .exec(
+                () -> {
+                    throw new IllegalStateException("illegal");
+                });
     }
 
-    @Test(expected = CustomException.class)
-    public void fullExceptionControl() throws CustomException {
-        new Try(
-            new Catch(
-                IllegalStateException.class,
-                e -> new FakeOperations().exec()
+    /**
+     * Try/catch/finally execution.
+     */
+    @Test
+    public void fullExceptionControl() {
+        final FakeOperations first = new FakeOperations();
+        final FakeOperations second = new FakeOperations();
+        try {
+            new Try(
+                new Catch(
+                    IllegalStateException.class,
+                    e -> first.exec()
+                )
+            ).with(
+                new Finally(second::exec),
+                new Throws<>(TryTest.CustomException::new)
             )
-        ).with(
-            new Finally(() -> new FakeOperations().exec()),
-            new Throws<>(TryTest.CustomException::new)
-        )
-            .exec(() -> {
-                throw new IllegalStateException("msg");
-            });
+                .exec(
+                    () -> {
+                        throw new IllegalStateException("msg");
+                    });
+        } catch (final TryTest.CustomException exp) {
+            TryTest.doNothing();
+        }
+        MatcherAssert.assertThat(
+            first.isExecuted(),
+            Matchers.equalTo(true)
+        );
+        MatcherAssert.assertThat(
+            second.isExecuted(),
+            Matchers.equalTo(true)
+        );
     }
 
+    /**
+     * Throw runtime exception.
+     */
     private void throwRuntimeException() {
         throw new IllegalStateException("illegal state");
     }
 
+    /**
+     * Throw checked exception.
+     * @throws Exception Exception
+     */
     private void throwException() throws Exception {
         throw new Exception("exception");
     }
 
+    /**
+     * Do nothing.
+     * @return Int Int
+     */
+    private static int doNothing() {
+        return 1;
+    }
+
+    /**
+     * Custom checked exception.
+     */
     private static class CustomException extends Exception {
-        CustomException(Exception exception) {
+        /**
+         * Ctor.
+         * @param exception Exception
+         */
+        CustomException(final Exception exception) {
             super(exception);
         }
     }
-
-    ;
 }

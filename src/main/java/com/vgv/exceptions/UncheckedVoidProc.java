@@ -35,7 +35,7 @@ import java.io.UncheckedIOException;
  * @version $Id$
  * @since 0.28.2
  */
-public class UncheckedVoidProc implements VoidProc {
+public final class UncheckedVoidProc implements VoidProc {
 
     /**
      * Original void proc.
@@ -51,9 +51,11 @@ public class UncheckedVoidProc implements VoidProc {
     }
 
     @Override
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public void exec() {
         try {
             this.origin.exec();
+            // @checkstyle IllegalCatchCheck (1 line)
         } catch (final Exception exp) {
             throw new UncheckedIOException(new IOException(exp));
         }

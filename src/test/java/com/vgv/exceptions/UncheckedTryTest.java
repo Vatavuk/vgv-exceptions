@@ -23,33 +23,43 @@
  */
 package com.vgv.exceptions;
 
-import java.util.function.Function;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import org.junit.Test;
 
 /**
- * Throws.
- * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
+ * Test case for {@link UncheckedTry}.
+ * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
- * @param <E> Extends Exception
  * @since 1.0
  */
-public final class Throws<E extends Exception> implements
-    Function<Exception, E> {
+public final class UncheckedTryTest {
 
     /**
-     * Function origin.
+     * Throw runtime exception when scalar execution throws checked exception.
      */
-    private final Function<Exception, E> origin;
-
-    /**
-     * Ctor.
-     * @param fun Function
-     */
-    public Throws(final Function<Exception, E> fun) {
-        this.origin = fun;
+    @Test(expected = UncheckedIOException.class)
+    public void scalarExecutionThrowsRuntimeException() {
+        new UncheckedTry(new Try()).exec(
+            () -> {
+                throw new IOException("msg");
+            });
     }
 
-    @Override
-    public E apply(final Exception exp) {
-        return this.origin.apply(exp);
+    /**
+     * Throw runtime exception when procedure execution throws
+     * checked exception.
+     */
+    @Test(expected = UncheckedIOException.class)
+    public void procedureExecutionThrowsRuntimeException() {
+        new UncheckedTry(new Try()).exec(UncheckedTryTest::throwIoException);
+    }
+
+    /**
+     * Throw IOException.
+     * @throws IOException IOException
+     */
+    private static void throwIoException() throws IOException {
+        throw new IOException("io exception");
     }
 }
