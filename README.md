@@ -22,9 +22,8 @@ public Entity getEntity(String id) throws MyAppException {
     }
 }
 ```
-
-This code is very procedural and "go-to" like.
-We can switch this procedures with objects.
+The above code is very procedural and "go-to" like.
+We can use objects instead:
 ```java
 public Entity getEntity(String id) throws MyAppException {
     return
@@ -46,3 +45,5 @@ public Entity getEntity(String id) throws MyAppException {
             new Throws(MyAppException::new)
         ).exec(() -> entities.get(id));
 ```
+Declared Throws instance maps any checked exception to MyAppException and specified
+runtime exceptions to MyAppException. Exceptions like NullPointerException etc.. are not mapped.
