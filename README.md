@@ -1,9 +1,10 @@
 Java library for object oriented exception handling.
 Library converts try/catch/finally statements into reusable objects.
 
-##Usage
+## Usage
 
-Lets assume following simplified scenario (Fetching entity from DB):
+Lets assume following simplified scenario (Fetching entity from DB). MyAppException,
+ClientException and DatabaseException are checked exceptions.
 ```java
 public Entity getEntity(String id) throws MyAppException {
     try {
@@ -46,4 +47,4 @@ public Entity getEntity(String id) throws MyAppException {
         ).exec(() -> entities.get(id));
 ```
 Declared Throws instance maps any checked exception to MyAppException and specified
-runtime exceptions to MyAppException. Exceptions like NullPointerException etc.. are not mapped.
+runtime exceptions (in the above case ValidationException and IllegalStateException) to MyAppException. Exceptions like NullPointerException etc... are not mapped.

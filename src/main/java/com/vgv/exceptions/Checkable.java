@@ -36,7 +36,7 @@ import org.cactoos.Scalar;
 public interface Checkable<E extends Exception> {
 
     /**
-     * Execute function through exception handling.
+     * Execute scalar through exception handling.
      * @param scalar Scalar
      * @param <T> Scalar type
      * @return Scalar value

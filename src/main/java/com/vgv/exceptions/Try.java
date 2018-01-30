@@ -55,7 +55,7 @@ import org.cactoos.Scalar;
  *      ).with(
  *            new Finally(() -> LOGGER.info("function executed")),
  *            new Throws<>(IOException::new)
- *      ).valueOf(() -> doSomething());
+ *      ).exec(() -> doSomething());
  * </pre>
  * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
  * @version $Id$
@@ -71,7 +71,7 @@ public final class Try implements Checkable<Exception> {
 
     /**
      * Ctor.
-     * @param chbls Consumers.
+     * @param chbls List of catchable objects.
      */
     public Try(final Catchable... chbls) {
         this(new Array<>(chbls));
@@ -79,7 +79,7 @@ public final class Try implements Checkable<Exception> {
 
     /**
      * Ctor.
-     * @param chbls Consumers.
+     * @param chbls List of catchable objects..
      */
     public Try(final Array<Catchable> chbls) {
         this.catchables = chbls;
@@ -110,8 +110,8 @@ public final class Try implements Checkable<Exception> {
     }
 
     /**
-     * Creates new exception control object with additional handling of finally
-     * statement.
+     * Creates new Checkable object with additional handling of finally
+     * block.
      * @param fnly Finally proc
      * @return Checkable Checkable
      */
@@ -120,7 +120,7 @@ public final class Try implements Checkable<Exception> {
     }
 
     /**
-     * Creates new exception control object that throws specified exception.
+     * Creates new Checkable object that throws specified exception.
      * @param thrws Throws function.
      * @param <T> Extends Exception
      * @return Checkable Checkable
@@ -131,7 +131,7 @@ public final class Try implements Checkable<Exception> {
     }
 
     /**
-     * Creates new exception control object with additional finally/throws
+     * Creates new Checkable object with additional finally/throws
      * functionality.
      * @param fnly Finally
      * @param thrws Throws
@@ -157,7 +157,7 @@ public final class Try implements Checkable<Exception> {
     }
 
     /**
-     * Exception control decorator that throws specific Exception.
+     * Checkable decorator that throws specific Exception.
      * @param <E> Extends Exception
      */
     private static class WithThrows<E extends Exception> implements
@@ -176,7 +176,7 @@ public final class Try implements Checkable<Exception> {
         /**
          * Ctor.
          * @param fun Function
-         * @param chbls Consumer
+         * @param chbls List of catchable objects
          */
         WithThrows(final Function<Exception, E> fun,
             final Iterable<Catchable> chbls) {
@@ -243,7 +243,7 @@ public final class Try implements Checkable<Exception> {
     }
 
     /**
-     * Exception control decorator that controls finally block.
+     * Catchable decorator that controls finally block.
      * @param <E> Extends Exception
      */
     private static class WithFinally<E extends Exception> implements
@@ -261,11 +261,11 @@ public final class Try implements Checkable<Exception> {
 
         /**
          * Ctor.
-         * @param control Exception control
+         * @param checkable Checkable
          * @param proc Proc
          */
-        WithFinally(final Checkable<E> control, final VoidProc proc) {
-            this.origin = control;
+        WithFinally(final Checkable<E> checkable, final VoidProc proc) {
+            this.origin = checkable;
             this.fproc = proc;
         }
 

@@ -26,7 +26,7 @@ package com.vgv.exceptions;
 import java.util.function.Function;
 
 /**
- * Throws statement.
+ * Specifies which exception will be thrown by {@link Catchable}.
  *
  * <p>There is no thread-safety guarantee.
  *
