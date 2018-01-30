@@ -2,10 +2,8 @@ Java library for object oriented exception handling.
 Library converts try/catch/finally statements into reusable objects.
 
 ## Usage
-
+### Try/Catch/Finally
 Lets assume following simplified scenario (Fetching entity from DB).
-Checked exceptions: MyAppException, ClientException and DatabaseException
-Runtime exceptions: ValidationException, IllegalStateException
 ```java
 public Entity getEntity(String id) throws MyAppException {
     try {
@@ -24,6 +22,10 @@ public Entity getEntity(String id) throws MyAppException {
     }
 }
 ```
+Checked exceptions: MyAppException, ClientException and DatabaseException
+
+Runtime exceptions: ValidationException, IllegalStateException
+
 The above code is very procedural and "go-to" like.
 We can use objects instead:
 ```java
@@ -48,8 +50,14 @@ public Entity getEntity(String id) throws MyAppException {
         ).exec(() -> entities.get(id));
 ```
 Declared Throws instance maps any checked exception to MyAppException and specified
-runtime exceptions (in the above case ValidationException and IllegalStateException) to MyAppException. Exceptions like NullPointerException etc... are not mapped.
+runtime exceptions (ValidationException and IllegalStateException) to MyAppException. Exceptions like NullPointerException etc... are not mapped.
 
+### Try/Finally
+```java
+new Try().with(new Finally(() -> LOGGER.info("message")))
+         .exec(() -> doSomething());
+```
+### Unchecked exception handling
 There are two ways to avoid throwing checked exceptions:
 ```java
 public Entity getEntity(String id) {
@@ -71,8 +79,25 @@ public Entity getEntity(String id) {
         ).exec(() -> entities.get(id));
 }
 ```
-## What are benefits of using OO style exception handling?
+## Benefits?
     * Declarative instead of procedural code. Easier to maintain, extend and test
-    * Classes can be decoupled from exception handling
+    * Classes can be decoupled from exception handling and specific implementation
+      can be injected into them
     * SRP compliant
     * Reusable
+### Exception handling injection
+```java
+public class MyApp {
+
+    private final Checkable<MyAppException> checkable;
+
+    public MyApp(Checkable<MyAppException> checkable) {
+        this.checkable = checkable;
+    }
+
+    public Entity getEntity(String id) throws MyAppException{
+        return this.checkable.exec(() -> entities.get(id));
+    }
+}
+```
+
