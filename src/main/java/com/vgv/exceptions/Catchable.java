@@ -39,7 +39,7 @@ public interface Catchable {
     void handle(Exception exception);
 
     /**
-     * Checks if Catch instance handles given exception.
+     * Checks if exception can be handled.
      * @param exception Exception
      * @return Boolean Boolean
      */

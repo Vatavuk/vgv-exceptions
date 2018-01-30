@@ -38,12 +38,12 @@ import java.util.function.Consumer;
 public final class Catch implements Catchable {
 
     /**
-     * List of classes.
+     * List of exception classes.
      */
     private final Array<Class<?>> classes;
 
     /**
-     * List of process that handle an exception.
+     * List of consumer that handles exceptions.
      */
     private final Consumer<Exception> consumer;
 
