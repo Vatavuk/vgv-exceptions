@@ -44,4 +44,6 @@ public interface Catchable {
      * @return Boolean Boolean
      */
     boolean supports(Exception exception);
+
+    int supportFactor(Exception exception);
 }

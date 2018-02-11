@@ -24,6 +24,7 @@
 package com.vgv.exceptions;
 
 import com.jcabi.immutable.Array;
+import java.util.Comparator;
 import java.util.function.Consumer;
 
 /**
@@ -86,5 +87,46 @@ public final class Catch implements Catchable {
             }
         }
         return supports;
+    }
+
+    @Override
+    public int supportFactor(final Exception exception) {
+        /*int value = new MinOf(
+            new Mapped<>(
+                new FuncOf<>(
+                    input -> factor(input, exception.getClass())
+                ),
+                this.classes
+            )
+        ).intValue();
+        return value;
+        */
+        return this.classes.stream()
+            .map(cls -> this.factor(cls, exception.getClass()))
+            .max(new Comparator<Integer>() {
+                @Override
+                public int compare(final Integer left, final Integer right) {
+                    return Integer.compare(left, right);
+                }
+            }).get();
+    }
+
+    private int factor(final Class<?> left, final Class<?> right) {
+        int factor = -1;
+        if (left.equals(right)) {
+            factor = 999;
+        } else {
+            Class<?> sclass = left.getSuperclass();
+            int idx = 0;
+            while (!sclass.equals(Object.class)) {
+                idx += 1;
+                if(sclass.equals(right)) {
+                    factor = idx;
+                    break;
+                }
+                sclass = sclass.getSuperclass();
+            }
+        }
+        return factor;
     }
 }
