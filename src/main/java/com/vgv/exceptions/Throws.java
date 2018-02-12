@@ -23,10 +23,11 @@
  */
 package com.vgv.exceptions;
 
+import com.vgv.exceptions.poc.CatchBlock;
 import java.util.function.Function;
 
 /**
- * Specifies which exception will be thrown by {@link Catchable}.
+ * Specifies which exception will be thrown by {@link CatchBlock}.
  *
  * <p>There is no thread-safety guarantee.
  *

@@ -23,6 +23,7 @@
  */
 package com.vgv.exceptions;
 
+import com.vgv.exceptions.poc.Catch;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UncheckedIOException;

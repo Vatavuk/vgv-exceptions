@@ -21,34 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.vgv.exceptions;
+package com.vgv.exceptions.poc;
 
 /**
- * Exception handling in finally block.
- *
- * <p>There is no thread-safety guarantee.
- *
- * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
+ * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0
  */
-public final class Finally implements VoidProc {
+public interface CatchBlocks {
 
     /**
-     * Void procedure origin.
+     * Handle exception.
+     * @param exception Exception
      */
-    private final VoidProc origin;
+    void handle(Exception exception);
 
     /**
-     * Ctor.
-     * @param vproc Void procedure
+     * Checks if exception can be handled.
+     * @param exception Exception
+     * @return Boolean Boolean
      */
-    public Finally(final VoidProc vproc) {
-        this.origin = vproc;
-    }
-
-    @Override
-    public void exec() {
-        new UncheckedVoidProc(this.origin).exec();
-    }
+    boolean supports(Exception exception);
 }

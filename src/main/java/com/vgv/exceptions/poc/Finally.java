@@ -21,33 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.vgv.exceptions;
+package com.vgv.exceptions.poc;
 
-import org.cactoos.Scalar;
+import com.vgv.exceptions.UncheckedFinally;
 
 /**
- * Exception control.
+ * Exception handling in finally block.
+ *
+ * <p>There is no thread-safety guarantee.
  *
  * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
  * @version $Id$
- * @param <E> Extends Exception
  * @since 1.0
  */
-public interface Checkable<E extends Exception> {
+public final class Finally implements FinallyBlock {
 
     /**
-     * Execute scalar through exception handling.
-     * @param scalar Scalar
-     * @param <T> Scalar type
-     * @return Scalar value
-     * @throws Exception Exception
+     * Void procedure origin.
      */
-    <T> T exec(Scalar<T> scalar) throws E;
+    private final FinallyBlock origin;
 
     /**
-     * Execute void procedure through exception handling.
-     * @param proc Proc
-     * @throws Exception Exception
+     * Ctor.
+     * @param vproc Void procedure
      */
-    void exec(VoidProc proc) throws E;
+    public Finally(final FinallyBlock vproc) {
+        this.origin = vproc;
+    }
+
+    @Override
+    public void exec() {
+        new UncheckedFinally(this.origin).exec();
+    }
 }

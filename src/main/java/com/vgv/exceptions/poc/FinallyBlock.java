@@ -21,29 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.vgv.exceptions;
+package com.vgv.exceptions.poc;
+
+import com.vgv.exceptions.UncheckedFinally;
 
 /**
- * Exception handling in catch block.
+ * Void procedure.
  *
- * @author Vedran Vatavuk (123vgv@gmail.com)
+ * <p>If you don't want to have any checked exceptions being thrown
+ * out of your {@link FinallyBlock}, you can use
+ * {@link UncheckedFinally} decorator.</p>
+ *
+ *
+ * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0
  */
-public interface Catchable {
+public interface FinallyBlock {
 
     /**
-     * Handle exception.
-     * @param exception Exception
+     * Execute it.
+     * @throws Exception Exception
      */
-    void handle(Exception exception);
-
-    /**
-     * Checks if exception can be handled.
-     * @param exception Exception
-     * @return Boolean Boolean
-     */
-    boolean supports(Exception exception);
-
-    int supportFactor(Exception exception);
+    void exec() throws Exception;
 }

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.vgv.exceptions;
+package com.vgv.exceptions.poc;
 
 import com.jcabi.immutable.Array;
 import java.util.Comparator;
@@ -36,7 +36,7 @@ import java.util.function.Consumer;
  * @version $Id$
  * @since 1.0
  */
-public final class Catch implements Catchable {
+public final class Catch implements CatchBlock {
 
     /**
      * List of exception classes.
@@ -51,23 +51,24 @@ public final class Catch implements Catchable {
     /**
      * Ctor.
      * @param cls Class
-     * @param consumer Consumer that handles an exception
+     * @param csm Consumer that handles an exception
      * @param <T> Extends Exception
      */
+    @SuppressWarnings("unchecked")
     public <T extends Exception> Catch(final Class<T> cls,
-        final Consumer<T> consumer) {
-        this(new Array<>(cls), (Consumer<Exception>) consumer);
+        final Consumer<T> csm) {
+        this(new Array<>(cls), (Consumer<Exception>) csm);
     }
 
     /**
      * Ctor.
-     * @param classes List of classes
-     * @param consumer Consumer that handles an exception
+     * @param clazzs List of classes
+     * @param csm Consumer that handles an exception
      */
-    public Catch(final Array<Class<?>> classes,
-        final Consumer<Exception> consumer) {
-        this.classes = new Array<>(classes);
-        this.consumer = consumer;
+    public Catch(final Array<Class<?>> clazzs,
+        final Consumer<Exception> csm) {
+        this.classes = new Array<>(clazzs);
+        this.consumer = csm;
     }
 
     @Override
@@ -79,54 +80,18 @@ public final class Catch implements Catchable {
 
     @Override
     public boolean supports(final Exception exception) {
-        boolean supports = false;
-        for (final Class<?> cls : this.classes) {
-            if (cls.isInstance(exception)) {
-                supports = true;
-                break;
-            }
-        }
-        return supports;
+        return this.matchingFactor(exception) > -1;
     }
 
     @Override
-    public int supportFactor(final Exception exception) {
-        /*int value = new MinOf(
-            new Mapped<>(
-                new FuncOf<>(
-                    input -> factor(input, exception.getClass())
-                ),
-                this.classes
-            )
-        ).intValue();
-        return value;
-        */
+    public int matchingFactor(final Exception exception) {
         return this.classes.stream()
-            .map(cls -> this.factor(cls, exception.getClass()))
+            .map(cls -> new ClassDistance(cls, exception.getClass()).value())
             .max(new Comparator<Integer>() {
                 @Override
                 public int compare(final Integer left, final Integer right) {
                     return Integer.compare(left, right);
                 }
             }).get();
-    }
-
-    private int factor(final Class<?> left, final Class<?> right) {
-        int factor = -1;
-        if (left.equals(right)) {
-            factor = 999;
-        } else {
-            Class<?> sclass = left.getSuperclass();
-            int idx = 0;
-            while (!sclass.equals(Object.class)) {
-                idx += 1;
-                if(sclass.equals(right)) {
-                    factor = idx;
-                    break;
-                }
-                sclass = sclass.getSuperclass();
-            }
-        }
-        return factor;
     }
 }

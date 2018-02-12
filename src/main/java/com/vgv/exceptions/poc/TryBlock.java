@@ -5,7 +5,7 @@ package com.vgv.exceptions.poc;
  * @version $Id$
  * @since 1.0
  */
-public interface Checkable {
+public interface TryBlock {
 
     /**
      * Execute scalar through exception handling.

@@ -5,7 +5,7 @@ package com.vgv.exceptions.poc;
  * @version $Id$
  * @since 1.0
  */
-public interface MappedCheckable<E extends Exception> {
+public interface MappedTryBlock<E extends Exception> {
 
     /**
      * Execute scalar through exception handling.

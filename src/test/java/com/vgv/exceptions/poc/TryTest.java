@@ -1,6 +1,5 @@
 package com.vgv.exceptions.poc;
 
-import com.vgv.exceptions.Catch;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import org.junit.Test;

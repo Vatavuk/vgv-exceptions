@@ -23,31 +23,42 @@
  */
 package com.vgv.exceptions;
 
+import com.vgv.exceptions.poc.FinallyBlock;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import org.junit.Test;
 
 /**
- * Test case for {@link UncheckedVoidProc}.
- * @author Vedran Vatavuk (123vgv@gmail.com)
+ * VoidProc that doesn't throw checked {@link Exception}.
+ *
+ * <p>There is no thread-safety guarantee.
+ *
+ * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0
  */
-public final class UncheckedVoidProcTest {
+public final class UncheckedFinally implements FinallyBlock {
 
     /**
-     * Void procedure throws runtime exception.
+     * Original void proc.
      */
-    @Test(expected = UncheckedIOException.class)
-    public void runtimeExceptionGoesOut() {
-        new UncheckedVoidProc(UncheckedVoidProcTest::throwException).exec();
+    private final FinallyBlock origin;
+
+    /**
+     * Ctor.
+     * @param proc Encapsulated func
+     */
+    public UncheckedFinally(final FinallyBlock proc) {
+        this.origin = proc;
     }
 
-    /**
-     * Throw IOException.
-     * @throws IOException IOException
-     */
-    private static void throwException() throws IOException {
-        throw new IOException("exception");
+    @Override
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
+    public void exec() {
+        try {
+            this.origin.exec();
+            // @checkstyle IllegalCatchCheck (1 line)
+        } catch (final Exception exp) {
+            throw new UncheckedIOException(new IOException(exp));
+        }
     }
 }

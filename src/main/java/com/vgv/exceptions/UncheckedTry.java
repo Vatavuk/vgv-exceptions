@@ -23,9 +23,11 @@
  */
 package com.vgv.exceptions;
 
+import com.vgv.exceptions.poc.ThrowableScalar;
+import com.vgv.exceptions.poc.ThrowableVoidProc;
+import com.vgv.exceptions.poc.TryBlock;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import org.cactoos.Scalar;
 
 /**
  * Exception control that does not throw checked {@link Exception}.
@@ -36,24 +38,25 @@ import org.cactoos.Scalar;
  * @version $Id$
  * @since 1.0
  */
-public final class UncheckedTry implements Checkable<Exception> {
+public final class UncheckedTry implements TryBlock {
 
     /**
      * Checkable origin.
      */
-    private final Checkable<? extends Exception> origin;
+    private final TryBlock origin;
 
     /**
      * Ctor.
-     * @param checkable Checkable
+     * @param block Try block
      */
-    public UncheckedTry(final Checkable<? extends Exception> checkable) {
-        this.origin = checkable;
+    public UncheckedTry(final TryBlock block) {
+        this.origin = block;
     }
 
     @Override
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
-    public <T> T exec(final Scalar<T> scalar) {
+
+    public <T, E extends Exception> T exec(final ThrowableScalar<T, E> scalar) {
         try {
             return this.origin.exec(scalar);
             // @checkstyle IllegalCatchCheck (1 line)
@@ -64,7 +67,7 @@ public final class UncheckedTry implements Checkable<Exception> {
 
     @Override
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
-    public void exec(final VoidProc proc) {
+    public <E extends Exception> void exec(final ThrowableVoidProc<E> proc) {
         try {
             this.origin.exec(proc);
             // @checkstyle IllegalCatchCheck (1 line)
