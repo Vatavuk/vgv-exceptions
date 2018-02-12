@@ -21,25 +21,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.vgv.exceptions.poc;
+package com.vgv.exceptions;
+
+import java.util.Comparator;
+import org.cactoos.list.ListOf;
 
 /**
+ * Multiple catch blocks.
  * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0
  */
-public interface CatchBlocks {
+public final class MultiCatch implements CatchBlocks {
 
     /**
-     * Handle exception.
-     * @param exception Exception
+     * List of catch blocks.
      */
-    void handle(Exception exception);
+    private final Iterable<CatchBlock> blocks;
 
     /**
-     * Checks if exception can be handled.
-     * @param exception Exception
-     * @return Boolean Boolean
+     * Ctor.
+     * @param blks Catch block list
      */
-    boolean supports(Exception exception);
+    public MultiCatch(CatchBlock... blks) {
+        this(new ListOf<>(blks));
+    }
+
+    /**
+     * Ctor.
+     * @param blks Catch block list
+     */
+    public MultiCatch(final Iterable<CatchBlock> blks) {
+        this.blocks = blks;
+    }
+
+    @Override
+    public void handle(final Exception exception) {
+        new ListOf<>(this.blocks).stream()
+            .filter(block -> block.supports(exception))
+            .max(Comparator.comparing(block -> block.matchingFactor(exception)))
+            .ifPresent(block -> block.handle(exception));
+    }
+
+    @Override
+    public boolean supports(final Exception exception) {
+        return new ListOf<>(this.blocks)
+            .stream().anyMatch(catchable -> catchable.supports(exception));
+    }
 }

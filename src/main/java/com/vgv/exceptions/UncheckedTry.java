@@ -23,9 +23,6 @@
  */
 package com.vgv.exceptions;
 
-import com.vgv.exceptions.poc.ThrowableScalar;
-import com.vgv.exceptions.poc.ThrowableVoidProc;
-import com.vgv.exceptions.poc.TryBlock;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
@@ -67,7 +64,7 @@ public final class UncheckedTry implements TryBlock {
 
     @Override
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
-    public <E extends Exception> void exec(final ThrowableVoidProc<E> proc) {
+    public <E extends Exception> void exec(final ThrowableVoid<E> proc) {
         try {
             this.origin.exec(proc);
             // @checkstyle IllegalCatchCheck (1 line)

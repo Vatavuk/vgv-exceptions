@@ -23,41 +23,56 @@
  */
 package com.vgv.exceptions;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
+import org.cactoos.Scalar;
 
 /**
- * Finally that doesn't throw checked {@link Exception}.
- *
- * <p>There is no thread-safety guarantee.
- *
- * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
+ * Compares two classes and calculates inheritance distance between them.
+ *  999 -> full match. (Matching IOException with IOException)
+ *    1 -> one inheritance level. (IOException with FileNotFoundException)
+ *   -1 -> no match. (IOException with RuntimException)
+ * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0
  */
-public final class UncheckedFinally implements FinallyBlock {
+public final class ClassDistance implements Scalar<Integer> {
 
     /**
-     * Original void proc.
+     * Base class.
      */
-    private final FinallyBlock origin;
+    private final Class<?> base;
+
+    /**
+     * Class to be compared.
+     */
+    private final Class<?> comparing;
 
     /**
      * Ctor.
-     * @param proc Encapsulated func
+     * @param from From
+     * @param towards To
      */
-    public UncheckedFinally(final FinallyBlock proc) {
-        this.origin = proc;
+    public ClassDistance(final Class<?> from, final Class<?> towards) {
+        this.base = from;
+        this.comparing = towards;
     }
 
     @Override
-    @SuppressWarnings("PMD.AvoidCatchingGenericException")
-    public void exec() {
-        try {
-            this.origin.exec();
-            // @checkstyle IllegalCatchCheck (1 line)
-        } catch (final Exception exp) {
-            throw new UncheckedIOException(new IOException(exp));
+    public Integer value() {
+        int factor = -1;
+        if (this.comparing.equals(this.base)) {
+            factor = 999;
+        } else {
+            Class<?> sclass = this.base.getSuperclass();
+            int idx = 0;
+            while (!sclass.equals(Object.class)) {
+                idx += 1;
+                if(sclass.equals(this.comparing)) {
+                    factor = idx;
+                    break;
+                }
+                sclass = sclass.getSuperclass();
+            }
         }
+        return factor;
     }
 }

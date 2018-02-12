@@ -23,7 +23,6 @@
  */
 package com.vgv.exceptions;
 
-import com.vgv.exceptions.poc.CatchBlock;
 import java.util.function.Function;
 
 /**

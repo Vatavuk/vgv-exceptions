@@ -21,37 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.vgv.exceptions.poc;
+package com.vgv.exceptions;
 
 /**
- * Exception handling in catch block.
- *
+ * Try block that throws specific exception.
  * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
+ * @param <E> Exception
  * @since 1.0
  */
-public interface CatchBlock {
+public interface MappedTryBlock<E extends Exception> {
 
     /**
-     * Handle exception.
-     * @param exception Exception
+     * Execute scalar through exception handling.
+     * @param scalar Scalar
+     * @param <T> Scalar type
+     * @return Scalar value
+     * @throws Exception Exception
      */
-    void handle(Exception exception);
+    <T> T exec(ThrowableScalar<T, Exception> scalar) throws E;
 
     /**
-     * Checks if exception can be handled.
-     * @param exception Exception
-     * @return Boolean Boolean
+     * Execute void procedure through exception handling.
+     * @param proc Proc
+     * @throws Exception Exception
      */
-    boolean supports(Exception exception);
-
-    /**
-     * Calculates inheritance level.
-     *  999 -> full match. (Matching IOException with IOException)
-     *   1 -> one inheritance level. (IOException with FileNotFoundException)
-     *  -1 -> no match. (IOException with RuntimException)
-     * @param exception
-     * @return
-     */
-    int matchingFactor(Exception exception);
+    void exec(ThrowableVoid<Exception> proc) throws E;
 }

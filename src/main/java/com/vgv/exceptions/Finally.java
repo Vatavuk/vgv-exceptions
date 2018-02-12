@@ -23,11 +23,8 @@
  */
 package com.vgv.exceptions;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-
 /**
- * Finally that doesn't throw checked {@link Exception}.
+ * Exception handling in finally block.
  *
  * <p>There is no thread-safety guarantee.
  *
@@ -35,29 +32,23 @@ import java.io.UncheckedIOException;
  * @version $Id$
  * @since 1.0
  */
-public final class UncheckedFinally implements FinallyBlock {
+public final class Finally implements FinallyBlock {
 
     /**
-     * Original void proc.
+     * Finally block origin.
      */
     private final FinallyBlock origin;
 
     /**
      * Ctor.
-     * @param proc Encapsulated func
+     * @param block Finally block
      */
-    public UncheckedFinally(final FinallyBlock proc) {
-        this.origin = proc;
+    public Finally(final FinallyBlock block) {
+        this.origin = block;
     }
 
     @Override
-    @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public void exec() {
-        try {
-            this.origin.exec();
-            // @checkstyle IllegalCatchCheck (1 line)
-        } catch (final Exception exp) {
-            throw new UncheckedIOException(new IOException(exp));
-        }
+        new UncheckedFinally(this.origin).exec();
     }
 }

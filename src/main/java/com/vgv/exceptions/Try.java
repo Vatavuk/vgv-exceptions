@@ -1,6 +1,28 @@
-package com.vgv.exceptions.poc;
+/**
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2018 Vedran Grgo Vatavuk
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+package com.vgv.exceptions;
 
-import com.vgv.exceptions.UncheckedFinally;
 import java.util.function.Function;
 
 /**
@@ -75,7 +97,7 @@ public final class Try implements TryBlock {
 
     @Override
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
-    public <E extends Exception> void exec(final ThrowableVoidProc<E> proc)
+    public <E extends Exception> void exec(final ThrowableVoid<E> proc)
         throws E {
         try {
             proc.exec();
@@ -94,6 +116,9 @@ public final class Try implements TryBlock {
      */
     public TryBlock with(final FinallyBlock fnly) {
 
+        /**
+         * TryBlock origin.
+         */
         final TryBlock origin = this;
 
         return new TryBlock() {
@@ -109,7 +134,7 @@ public final class Try implements TryBlock {
 
             @Override
             public <E extends Exception> void exec(
-                final ThrowableVoidProc<E> proc)
+                final ThrowableVoid<E> proc)
                 throws E {
                 try {
                     origin.exec(proc);
@@ -142,6 +167,9 @@ public final class Try implements TryBlock {
     public <E extends Exception> MappedTryBlock<E> with(final FinallyBlock fnly,
         final Function<Exception, E> thrws) {
 
+        /**
+         * Try block origin.
+         */
         final MappedTryBlock<E> origin = this.with(thrws);
 
         return new MappedTryBlock<E>() {
@@ -156,7 +184,7 @@ public final class Try implements TryBlock {
             }
 
             @Override
-            public void exec(final ThrowableVoidProc<Exception> proc) throws E {
+            public void exec(final ThrowableVoid<Exception> proc) throws E {
                 try {
                     origin.exec(proc);
                 } finally {
@@ -218,7 +246,7 @@ public final class Try implements TryBlock {
         }
 
         @Override
-        public void exec(final ThrowableVoidProc<Exception> proc) throws E {
+        public void exec(final ThrowableVoid<Exception> proc) throws E {
             try {
                 proc.exec();
                 // @checkstyle IllegalCatchCheck (1 line)
@@ -230,11 +258,25 @@ public final class Try implements TryBlock {
             }
         }
 
+        /**
+         * Handle exception
+         * @param exception Exception
+         * @param <T>
+         * @return
+         * @throws E Exception
+         */
         private <T> T handle(final Exception exception) throws E {
             this.blocks.handle(exception);
             throw this.fun.apply(exception);
         }
 
+        /**
+         * Handle unchecked exception
+         * @param exception Exception
+         * @param <T>
+         * @return
+         * @throws E
+         */
         private <T> T handleUnchecked(final RuntimeException exception) throws E {
             if (this.blocks.supports(exception)) {
                 this.handle(exception);

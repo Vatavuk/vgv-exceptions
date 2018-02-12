@@ -23,8 +23,6 @@
  */
 package com.vgv.exceptions;
 
-import com.vgv.exceptions.poc.Catch;
-import com.vgv.exceptions.poc.Finally;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import org.hamcrest.MatcherAssert;

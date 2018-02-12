@@ -23,41 +23,17 @@
  */
 package com.vgv.exceptions;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-
 /**
- * Finally that doesn't throw checked {@link Exception}.
- *
- * <p>There is no thread-safety guarantee.
- *
- * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
+ * Void procedure that throws specific exception.
+ * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0
  */
-public final class UncheckedFinally implements FinallyBlock {
+public interface ThrowableVoid<E extends Exception> {
 
     /**
-     * Original void proc.
+     * Execute it.
+     * @throws Exception If fails
      */
-    private final FinallyBlock origin;
-
-    /**
-     * Ctor.
-     * @param proc Encapsulated func
-     */
-    public UncheckedFinally(final FinallyBlock proc) {
-        this.origin = proc;
-    }
-
-    @Override
-    @SuppressWarnings("PMD.AvoidCatchingGenericException")
-    public void exec() {
-        try {
-            this.origin.exec();
-            // @checkstyle IllegalCatchCheck (1 line)
-        } catch (final Exception exp) {
-            throw new UncheckedIOException(new IOException(exp));
-        }
-    }
+    void exec() throws E;
 }

@@ -21,36 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.vgv.exceptions.poc;
-
-import com.vgv.exceptions.UncheckedFinally;
+package com.vgv.exceptions;
 
 /**
- * Exception handling in finally block.
+ * Finally block.
  *
- * <p>There is no thread-safety guarantee.
+ * <p>If you don't want to have any checked exceptions being thrown
+ * out of your {@link FinallyBlock}, you can use
+ * {@link UncheckedFinally} decorator.</p>
+ *
  *
  * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0
  */
-public final class Finally implements FinallyBlock {
+public interface FinallyBlock {
 
     /**
-     * Void procedure origin.
+     * Execute it.
+     * @throws Exception Exception
      */
-    private final FinallyBlock origin;
-
-    /**
-     * Ctor.
-     * @param vproc Void procedure
-     */
-    public Finally(final FinallyBlock vproc) {
-        this.origin = vproc;
-    }
-
-    @Override
-    public void exec() {
-        new UncheckedFinally(this.origin).exec();
-    }
+    void exec() throws Exception;
 }

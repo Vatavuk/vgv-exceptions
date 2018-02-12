@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.vgv.exceptions.poc;
+package com.vgv.exceptions;
 
 import com.jcabi.immutable.Array;
 import java.util.Comparator;

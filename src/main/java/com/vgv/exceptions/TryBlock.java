@@ -21,40 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.vgv.exceptions.poc;
-
-import java.util.Comparator;
-import org.cactoos.list.ListOf;
+package com.vgv.exceptions;
 
 /**
+ * Try block.
  * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0
  */
-public final class Catchables implements CatchBlock {
+public interface TryBlock {
 
-    private final Iterable<CatchBlock> catchables;
+    /**
+     * Execute scalar through exception handling.
+     * @param scalar Scalar
+     * @param <T> Scalar type
+     * @return Scalar value
+     * @throws Exception Exception
+     */
+    <T, E extends Exception> T exec(ThrowableScalar<T, E> scalar) throws E;
 
-    public Catchables(final Iterable<CatchBlock> chbls) {
-        this.catchables = chbls;
-    }
-
-    @Override
-    public void handle(final Exception exception) {
-        new ListOf<>(this.catchables).stream()
-            .filter(chbl -> chbl.supports(exception))
-            .max(Comparator.comparing(chbl -> chbl.matchingFactor(exception)))
-            .ifPresent(chbl -> chbl.handle(exception));
-    }
-
-    @Override
-    public boolean supports(final Exception exception) {
-        return new ListOf<>(this.catchables)
-            .stream().anyMatch(catchable -> catchable.supports(exception));
-    }
-
-    @Override
-    public int matchingFactor(final Exception exception) {
-        throw new UnsupportedOperationException("#matchingFactor()");
-    }
+    /**
+     * Execute void procedure through exception handling.
+     * @param proc Proc
+     * @throws Exception Exception
+     */
+    <E extends Exception> void exec(ThrowableVoid<E> proc) throws E;
 }

@@ -23,7 +23,6 @@
  */
 package com.vgv.exceptions;
 
-import com.vgv.exceptions.poc.Finally;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
