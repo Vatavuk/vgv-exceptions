@@ -23,53 +23,24 @@
  */
 package com.vgv.exceptions;
 
-import java.util.Comparator;
-import org.cactoos.list.ListOf;
-
 /**
- * Multiple catch blocks.
+ * Custom checked exception.
  * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0
  */
-public final class MultiCatch implements CatchBlocks {
+final class CustomException extends Exception {
 
     /**
-     * List of catch blocks.
+     * Serial version.
      */
-    private final Iterable<CatchBlock> blocks;
-
-    /**
-     * Ctor.
-     * @param blks Catch block list
-     */
-    public MultiCatch(final CatchBlock... blks) {
-        this(new ListOf<>(blks));
-    }
+    private static final long serialVersionUID = 6775635863310031179L;
 
     /**
      * Ctor.
-     * @param blks Catch block list
+     * @param exception Exception
      */
-    public MultiCatch(final Iterable<CatchBlock> blks) {
-        this.blocks = blks;
-    }
-
-    @Override
-    public void handle(final Exception exception) {
-        new ListOf<>(this.blocks).stream()
-            .filter(block -> block.supports(exception))
-            .min(
-                Comparator.comparing(
-                    block -> block.inheritanceDistance(exception)
-                )
-            )
-            .ifPresent(block -> block.handle(exception));
-    }
-
-    @Override
-    public boolean supports(final Exception exception) {
-        return new ListOf<>(this.blocks)
-            .stream().anyMatch(catchable -> catchable.supports(exception));
+    CustomException(final Exception exception) {
+        super(exception);
     }
 }

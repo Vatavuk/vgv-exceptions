@@ -23,15 +23,15 @@
  */
 package com.vgv.exceptions;
 
-import com.jcabi.immutable.Array;
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.function.Consumer;
+import org.cactoos.list.ListOf;
 
 /**
  * Exception handling in catch block.
  *
  * <p>There is no thread-safety guarantee.
- *
  * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0
@@ -41,7 +41,7 @@ public final class Catch implements CatchBlock {
     /**
      * List of exception classes.
      */
-    private final Array<Class<?>> classes;
+    private final Iterable<Class<?>> classes;
 
     /**
      * List of consumer that handles exceptions.
@@ -57,7 +57,7 @@ public final class Catch implements CatchBlock {
     @SuppressWarnings("unchecked")
     public <T extends Exception> Catch(final Class<T> cls,
         final Consumer<T> csm) {
-        this(new Array<>(cls), (Consumer<Exception>) csm);
+        this(new ListOf<>(cls), (Consumer<Exception>) csm);
     }
 
     /**
@@ -65,9 +65,9 @@ public final class Catch implements CatchBlock {
      * @param clazzs List of classes
      * @param csm Consumer that handles an exception
      */
-    public Catch(final Array<Class<?>> clazzs,
+    public Catch(final Iterable<Class<?>> clazzs,
         final Consumer<Exception> csm) {
-        this.classes = new Array<>(clazzs);
+        this.classes = clazzs;
         this.consumer = csm;
     }
 
@@ -80,18 +80,36 @@ public final class Catch implements CatchBlock {
 
     @Override
     public boolean supports(final Exception exception) {
-        return this.matchingFactor(exception) > -1;
+        return new InheritanceDistance.Match(
+            this.inheritanceDistance(exception)
+        ).value();
     }
 
     @Override
-    public int matchingFactor(final Exception exception) {
-        return this.classes.stream()
-            .map(cls -> new ClassDistance(cls, exception.getClass()).value())
-            .max(new Comparator<Integer>() {
-                @Override
-                public int compare(final Integer left, final Integer right) {
-                    return Integer.compare(left, right);
-                }
-            }).get();
+    public int inheritanceDistance(final Exception exception) {
+        return new ListOf<>(this.classes).stream()
+            .map(
+                cls -> new InheritanceDistance(
+                    exception.getClass(), cls
+                ).value()
+            )
+            .min(new Catch.Compared()).get();
+    }
+
+    /**
+     * Compared.
+     */
+    private static final class Compared implements Comparator<Integer>,
+        Serializable {
+
+        /**
+         * Serial version.
+         */
+        private static final long serialVersionUID = 914077573720438357L;
+
+        @Override
+        public int compare(final Integer left, final Integer right) {
+            return Integer.compare(left, right);
+        }
     }
 }

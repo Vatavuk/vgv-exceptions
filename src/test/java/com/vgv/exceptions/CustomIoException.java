@@ -23,53 +23,13 @@
  */
 package com.vgv.exceptions;
 
-import java.util.Comparator;
-import org.cactoos.list.ListOf;
+import java.io.IOException;
 
 /**
- * Multiple catch blocks.
+ * Custom IOException.
  * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0
  */
-public final class MultiCatch implements CatchBlocks {
-
-    /**
-     * List of catch blocks.
-     */
-    private final Iterable<CatchBlock> blocks;
-
-    /**
-     * Ctor.
-     * @param blks Catch block list
-     */
-    public MultiCatch(final CatchBlock... blks) {
-        this(new ListOf<>(blks));
-    }
-
-    /**
-     * Ctor.
-     * @param blks Catch block list
-     */
-    public MultiCatch(final Iterable<CatchBlock> blks) {
-        this.blocks = blks;
-    }
-
-    @Override
-    public void handle(final Exception exception) {
-        new ListOf<>(this.blocks).stream()
-            .filter(block -> block.supports(exception))
-            .min(
-                Comparator.comparing(
-                    block -> block.inheritanceDistance(exception)
-                )
-            )
-            .ifPresent(block -> block.handle(exception));
-    }
-
-    @Override
-    public boolean supports(final Exception exception) {
-        return new ListOf<>(this.blocks)
-            .stream().anyMatch(catchable -> catchable.supports(exception));
-    }
+final class CustomIoException extends IOException {
 }

@@ -36,7 +36,7 @@ import org.junit.Test;
 public final class UncheckedFinallyTest {
 
     /**
-     * Void procedure throws runtime exception.
+     * Finally block throws runtime exception.
      */
     @Test(expected = UncheckedIOException.class)
     public void runtimeExceptionGoesOut() {

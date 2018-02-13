@@ -27,14 +27,28 @@ import org.cactoos.Scalar;
 
 /**
  * Compares two classes and calculates inheritance distance between them.
- *  999 -> full match. (Matching IOException with IOException)
- *    1 -> one inheritance level. (IOException with FileNotFoundException)
- *   -1 -> no match. (IOException with RuntimException)
+ * 0 -> full match. (matching IOException with IOException)
+ * 1 -> one inheritance level. (matching IOException with
+ * FileNotFoundException)
+ * 2 -> two inheritance levels. (matching Exception with
+ * FileNotFoundException)
+ * ...
+ * 999 -> no match. (matching IOException with RuntimeException)
  * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0
  */
-public final class ClassDistance implements Scalar<Integer> {
+public final class InheritanceDistance implements Scalar<Integer> {
+
+    /**
+     * Level that specifies that two classes are identical.
+     */
+    private static final int FULL_MATCH = 0;
+
+    /**
+     * Level that specifies that classes are not related.
+     */
+    private static final int NO_MATCH = 999;
 
     /**
      * Base class.
@@ -51,22 +65,22 @@ public final class ClassDistance implements Scalar<Integer> {
      * @param from From
      * @param towards To
      */
-    public ClassDistance(final Class<?> from, final Class<?> towards) {
+    public InheritanceDistance(final Class<?> from, final Class<?> towards) {
         this.base = from;
         this.comparing = towards;
     }
 
     @Override
     public Integer value() {
-        int factor = -1;
+        int factor = InheritanceDistance.NO_MATCH;
         if (this.comparing.equals(this.base)) {
-            factor = 999;
+            factor = InheritanceDistance.FULL_MATCH;
         } else {
             Class<?> sclass = this.base.getSuperclass();
             int idx = 0;
             while (!sclass.equals(Object.class)) {
                 idx += 1;
-                if(sclass.equals(this.comparing)) {
+                if (sclass.equals(this.comparing)) {
                     factor = idx;
                     break;
                 }
@@ -74,5 +88,29 @@ public final class ClassDistance implements Scalar<Integer> {
             }
         }
         return factor;
+    }
+
+    /**
+     * Relationship level matching.
+     */
+    public static final class Match implements Scalar<Boolean> {
+
+        /**
+         * Relationship level.
+         */
+        private final int val;
+
+        /**
+         * Ctor.
+         * @param level Relationship level
+         */
+        public Match(final int level) {
+            this.val = level;
+        }
+
+        @Override
+        public Boolean value() {
+            return this.val < InheritanceDistance.NO_MATCH;
+        }
     }
 }

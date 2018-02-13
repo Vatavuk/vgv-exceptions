@@ -59,6 +59,7 @@ import java.util.function.Function;
  * @version $Id$
  * @since 1.0
  */
+@SuppressWarnings("PMD.TooManyMethods")
 public final class Try implements TryBlock {
 
     /**
@@ -115,34 +116,7 @@ public final class Try implements TryBlock {
      * @return Checkable Checkable
      */
     public TryBlock with(final FinallyBlock fnly) {
-
-        /**
-         * TryBlock origin.
-         */
-        final TryBlock origin = this;
-
-        return new TryBlock() {
-            @Override
-            public <T, E extends Exception> T exec(
-                final ThrowableScalar<T, E> scalar) throws E {
-                try {
-                    return origin.exec(scalar);
-                } finally {
-                    new UncheckedFinally(fnly).exec();
-                }
-            }
-
-            @Override
-            public <E extends Exception> void exec(
-                final ThrowableVoid<E> proc)
-                throws E {
-                try {
-                    origin.exec(proc);
-                } finally {
-                    new UncheckedFinally(fnly).exec();
-                }
-            }
-        };
+        return new Try.WithFinally(this, fnly);
     }
 
     /**
@@ -166,40 +140,62 @@ public final class Try implements TryBlock {
      */
     public <E extends Exception> MappedTryBlock<E> with(final FinallyBlock fnly,
         final Function<Exception, E> thrws) {
+        return new Try.WithThrowsFinally<>(this.with(thrws), fnly);
+    }
+
+    /**
+     * TryBlock with additional handling of finally block.
+     */
+    private static final class WithFinally implements TryBlock {
 
         /**
-         * Try block origin.
+         * TryBlock origin.
          */
-        final MappedTryBlock<E> origin = this.with(thrws);
+        private final TryBlock origin;
 
-        return new MappedTryBlock<E>() {
-            @Override
-            public <T> T exec(final ThrowableScalar<T, Exception> scalar)
-                throws E {
-                try {
-                    return origin.exec(scalar);
-                } finally {
-                    new UncheckedFinally(fnly).exec();
-                }
-            }
+        /**
+         * Finally block.
+         */
+        private final FinallyBlock fnly;
 
-            @Override
-            public void exec(final ThrowableVoid<Exception> proc) throws E {
-                try {
-                    origin.exec(proc);
-                } finally {
-                    new UncheckedFinally(fnly).exec();
-                }
+        /**
+         * Ctor.
+         * @param tblk TryBlock
+         * @param fblk FinallyBlock
+         */
+        WithFinally(final TryBlock tblk, final FinallyBlock fblk) {
+            this.origin = tblk;
+            this.fnly = fblk;
+        }
+
+        @Override
+        public <T, E extends Exception> T exec(
+            final ThrowableScalar<T, E> scalar) throws E {
+            try {
+                return this.origin.exec(scalar);
+            } finally {
+                new UncheckedFinally(this.fnly).exec();
             }
-        };
+        }
+
+        @Override
+        public <E extends Exception> void exec(
+            final ThrowableVoid<E> proc)
+            throws E {
+            try {
+                this.origin.exec(proc);
+            } finally {
+                new UncheckedFinally(this.fnly).exec();
+            }
+        }
     }
 
     /**
      * Exception control that throws specific exception.
      * @param <E> Exception
      */
-    private static final class WithThrows<E extends Exception>
-        implements MappedTryBlock<E> {
+    private static final class WithThrows<E extends Exception> implements
+        MappedTryBlock<E> {
 
         /**
          * Function that wraps exception to a specific one.
@@ -216,7 +212,7 @@ public final class Try implements TryBlock {
          * @param func Function
          * @param blcks Catch blocks
          */
-        public WithThrows(final Function<Exception, E> func,
+        WithThrows(final Function<Exception, E> func,
             final Iterable<CatchBlock> blcks) {
             this(func, new MultiCatch(blcks));
         }
@@ -226,62 +222,102 @@ public final class Try implements TryBlock {
          * @param func Func
          * @param blcks Catch blocks
          */
-        public WithThrows(final Function<Exception, E> func,
+        WithThrows(final Function<Exception, E> func,
             final CatchBlocks blcks) {
             this.fun = func;
             this.blocks = blcks;
         }
 
         @Override
+        @SuppressWarnings("PMD.AvoidCatchingGenericException")
         public <T> T exec(final ThrowableScalar<T, Exception> scalar) throws E {
             try {
                 return scalar.value();
                 // @checkstyle IllegalCatchCheck (1 line)
             } catch (final RuntimeException exception) {
-                return this.handleUnchecked(exception);
+                if (this.blocks.supports(exception)) {
+                    this.handle(exception);
+                }
+                throw exception;
                 // @checkstyle IllegalCatchCheck (1 line)
             } catch (final Exception exception) {
-                return this.handle(exception);
+                this.blocks.handle(exception);
+                throw this.fun.apply(exception);
+            }
+        }
+
+        @Override
+        @SuppressWarnings("PMD.AvoidCatchingGenericException")
+        public void exec(final ThrowableVoid<Exception> proc) throws E {
+            try {
+                proc.exec();
+                // @checkstyle IllegalCatchCheck (1 line)
+            } catch (final RuntimeException exception) {
+                if (this.blocks.supports(exception)) {
+                    this.handle(exception);
+                }
+                throw exception;
+                // @checkstyle IllegalCatchCheck (1 line)
+            } catch (final Exception exception) {
+                this.handle(exception);
+            }
+        }
+
+        /**
+         * Handle exception.
+         * @param exception Exception
+         * @throws E Exception
+         */
+        private void handle(final Exception exception) throws E {
+            this.blocks.handle(exception);
+            throw this.fun.apply(exception);
+        }
+    }
+
+    /**
+     * TryBlock object with additional finally/throws functionality.
+     * @param <E> Exception
+     */
+    private static final class WithThrowsFinally<E extends Exception> implements
+        MappedTryBlock<E> {
+
+        /**
+         * Mapped Try block origin.
+         */
+        private final MappedTryBlock<E> origin;
+
+        /**
+         * Finally block.
+         */
+        private final FinallyBlock fnly;
+
+        /**
+         * Ctor.
+         * @param tblock Mapepd Try block
+         * @param fblock Finally block
+         */
+        WithThrowsFinally(final MappedTryBlock<E> tblock,
+            final FinallyBlock fblock) {
+            this.origin = tblock;
+            this.fnly = fblock;
+        }
+
+        @Override
+        public <T> T exec(final ThrowableScalar<T, Exception> scalar) throws E {
+            try {
+                return this.origin.exec(scalar);
+            } finally {
+                new UncheckedFinally(this.fnly).exec();
             }
         }
 
         @Override
         public void exec(final ThrowableVoid<Exception> proc) throws E {
             try {
-                proc.exec();
-                // @checkstyle IllegalCatchCheck (1 line)
-            } catch (final RuntimeException exception) {
-                this.handleUnchecked(exception);
-                // @checkstyle IllegalCatchCheck (1 line)
-            } catch (final Exception exception) {
-                this.handle(exception);
+                this.origin.exec(proc);
+            } finally {
+                new UncheckedFinally(this.fnly).exec();
             }
-        }
-
-        /**
-         * Handle exception
-         * @param exception Exception
-         * @param <T>
-         * @return
-         * @throws E Exception
-         */
-        private <T> T handle(final Exception exception) throws E {
-            this.blocks.handle(exception);
-            throw this.fun.apply(exception);
-        }
-
-        /**
-         * Handle unchecked exception
-         * @param exception Exception
-         * @param <T>
-         * @return
-         * @throws E
-         */
-        private <T> T handleUnchecked(final RuntimeException exception) throws E {
-            if (this.blocks.supports(exception)) {
-                this.handle(exception);
-            }
-            throw exception;
         }
     }
 }

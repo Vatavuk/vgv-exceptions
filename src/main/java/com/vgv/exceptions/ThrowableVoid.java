@@ -27,6 +27,7 @@ package com.vgv.exceptions;
  * Void procedure that throws specific exception.
  * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
+ * @param <E> Exception
  * @since 1.0
  */
 public interface ThrowableVoid<E extends Exception> {

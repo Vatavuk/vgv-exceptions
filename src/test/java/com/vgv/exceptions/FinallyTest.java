@@ -36,7 +36,7 @@ import org.junit.Test;
 public final class FinallyTest {
 
     /**
-     * Executes void function as finally statement.
+     * Executes finally block.
      */
     @Test
     public void executeVoidFunction() {

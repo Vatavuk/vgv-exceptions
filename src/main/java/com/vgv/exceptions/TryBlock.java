@@ -35,15 +35,17 @@ public interface TryBlock {
      * Execute scalar through exception handling.
      * @param scalar Scalar
      * @param <T> Scalar type
-     * @return Scalar value
-     * @throws Exception Exception
+     * @param <E> Exception
+     * @return T Values
+     * @throws E Exception
      */
     <T, E extends Exception> T exec(ThrowableScalar<T, E> scalar) throws E;
 
     /**
      * Execute void procedure through exception handling.
      * @param proc Proc
-     * @throws Exception Exception
+     * @param <E> Exception
+     * @throws E Exception
      */
     <E extends Exception> void exec(ThrowableVoid<E> proc) throws E;
 }

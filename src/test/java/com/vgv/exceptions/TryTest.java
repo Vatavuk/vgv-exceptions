@@ -190,13 +190,13 @@ public final class TryTest {
                 )
             ).with(
                 new Finally(second::exec),
-                new Throws<>(TryTest.CustomException::new)
+                new Throws<>(CustomException::new)
             )
                 .exec(
                     () -> {
                         throw new IllegalStateException("msg");
                     });
-        } catch (final TryTest.CustomException exp) {
+        } catch (final CustomException exp) {
             TryTest.doNothing();
         }
         MatcherAssert.assertThat(
@@ -230,18 +230,5 @@ public final class TryTest {
      */
     private static int doNothing() {
         return 1;
-    }
-
-    /**
-     * Custom checked exception.
-     */
-    private static class CustomException extends Exception {
-        /**
-         * Ctor.
-         * @param exception Exception
-         */
-        CustomException(final Exception exception) {
-            super(exception);
-        }
     }
 }

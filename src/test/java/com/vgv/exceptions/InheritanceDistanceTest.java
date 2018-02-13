@@ -24,59 +24,60 @@
 package com.vgv.exceptions;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import org.cactoos.list.ListOf;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
- * Test case for {@link Catch}.
+ * Test case for {@link InheritanceDistance}.
  * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0
  */
-public final class CatchTest {
+public final class InheritanceDistanceTest {
 
     /**
-     * Catches FileNotFoundException and throws UncheckedIOException.
-     */
-    @Test(expected = UncheckedIOException.class)
-    public void rethrowsException() {
-        new Catch(
-            IOException.class,
-            exp -> {
-                throw new UncheckedIOException(exp);
-            }).handle(new FileNotFoundException("not found"));
-    }
-
-    /**
-     * Handles checked exception.
+     * Calculates relationship distance between two classes.
+     * Exception class is two inheritance level bellow FileNotFoundException.
      */
     @Test
-    public void handlesException() {
-        final FakeOperations operations = new FakeOperations();
-        new Catch(
-            new ListOf<>(IOException.class, FileNotFoundException.class),
-            exp -> operations.exec()
-        ).handle(new IOException("io exception"));
+    public void calculatesRelationshipDistance() {
+        final int expected = 2;
         MatcherAssert.assertThat(
-            operations.isExecuted(),
-            Matchers.equalTo(true)
+            new InheritanceDistance(
+                FileNotFoundException.class, Exception.class
+            ).value(),
+            Matchers.equalTo(expected)
         );
     }
 
     /**
-     * No exception is handled. The catch instance does not support catching
-     * of IOExceptions.
+     * Calculates relationship distance between two classes.
+     * Classes FileNotFoundException and RuntimeException are not related.
      */
     @Test
-    public void doesntHandleException() {
-        new Catch(
-            IllegalStateException.class,
-            exp -> {
-                throw new IllegalStateException(exp);
-            }).handle(new IOException("msg"));
+    public void classesAreNotRelated() {
+        final int expected = 999;
+        MatcherAssert.assertThat(
+            new InheritanceDistance(
+                FileNotFoundException.class, RuntimeException.class
+            ).value(),
+            Matchers.equalTo(expected)
+        );
+    }
+
+    /**
+     * Calculates relationship distance between two classes.
+     * Classes are identical.
+     */
+    @Test
+    public void classesAreIdentical() {
+        final int expected = 0;
+        MatcherAssert.assertThat(
+            new InheritanceDistance(
+                FileNotFoundException.class, FileNotFoundException.class
+            ).value(),
+            Matchers.equalTo(expected)
+        );
     }
 }

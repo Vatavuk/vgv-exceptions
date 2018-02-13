@@ -27,6 +27,8 @@ package com.vgv.exceptions;
  * Scalar that throws specific exception.
  * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
+ * @param <E> Exception
+ * @param <T> Value
  * @since 1.0
  */
 public interface ThrowableScalar<T, E extends Exception> {
@@ -34,7 +36,7 @@ public interface ThrowableScalar<T, E extends Exception> {
     /**
      * Convert it to the value.
      * @return The value
-     * @throws Exception If fails
+     * @throws E If fails
      */
     T value() throws E;
 }
