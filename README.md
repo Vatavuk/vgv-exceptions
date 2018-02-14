@@ -60,7 +60,7 @@ public Entity getEntity(String id) throws MyAppException {
             .exec(() -> entities.get(id));
 }
 ```
-Add the catch statements to make full **try/catch/finally** exception control:
+Finally add the catch statements to make full **try/catch/finally** exception control:
 ```java
 public Entity getEntity(String id) throws MyAppException {
     return
