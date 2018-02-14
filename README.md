@@ -66,11 +66,11 @@ public Entity getEntity(String id) throws MyAppException {
     return
         new Try(
             new Catch(
-                ClientException.class,
+                ClientIOException.class,
                 exp -> LOGGER.error("Client exception message", e)
             ),
             new Catch(
-                DatabaseException.class,
+                DatabaseIOException.class,
                 exp -> LOGGER.error("Database exception meassage", e)
             ),
             new Catch(
