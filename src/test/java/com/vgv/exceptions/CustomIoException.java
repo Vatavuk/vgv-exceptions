@@ -32,4 +32,9 @@ import java.io.IOException;
  * @since 1.0
  */
 final class CustomIoException extends IOException {
+
+    /**
+     * Serial version.
+     */
+    private static final long serialVersionUID = 6414994171691445659L;
 }
