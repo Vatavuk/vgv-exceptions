@@ -3,7 +3,7 @@ Java library for object oriented exception handling.
 Library converts try/catch/finally statements into reusable objects.
 
 ## Usage
-Lets assume following simplified scenario (Fetching entity from DB).
+Assume following simplified scenario (Fetching entity from DB):
 ```java
 public Entity getEntity(String id) throws MyAppException {
     try {
