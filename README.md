@@ -2,7 +2,20 @@
 Java library for object oriented exception handling.
 Library converts try/catch/finally statements into reusable objects.
 
-## Usage
+**How to use**.
+Latest version [here](https://github.com/Vatavuk/vgv-exceptions/releases)
+
+```xml
+<dependency>
+    <groupId>hr.com.vgv</groupId>
+    <artifactId>vgv-exceptions</artifactId>
+    <version>1.0</version>
+</dependency>
+```
+
+Java version required: 1.8+.
+
+## Example
 Assume following simplified scenario (Fetching entity from DB):
 ```java
 public Entity getEntity(String id) throws MyAppException {
