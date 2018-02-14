@@ -72,6 +72,6 @@ public final class MultiCatch implements CatchBlocks {
     @Override
     public boolean supports(final Exception exception) {
         return new ListOf<>(this.blocks)
-            .stream().anyMatch(catchable -> catchable.supports(exception));
+            .stream().anyMatch(block -> block.supports(exception));
     }
 }

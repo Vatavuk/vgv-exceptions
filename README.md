@@ -3,16 +3,15 @@ Java library for object oriented exception handling.
 Library converts try/catch/finally statements into reusable objects.
 
 ## Usage
-### Try/Catch/Finally
 Lets assume following simplified scenario (Fetching entity from DB).
 ```java
 public Entity getEntity(String id) throws MyAppException {
     try {
         return entities.get(id);
-    } catch(ClientException exp) {
+    } catch(ClientIOException exp) {
         LOGGER.error("Client exception message", e);
         throw new MyAppException(e);
-    } catch(DatabaseException exp) {
+    } catch(DatabaseIOException exp) {
         LOGGER.error("Database exception message", e);
         throw new MyAppException(e);
     } catch(ValidationRuntimeException | IllegalStateException exp) {
@@ -24,7 +23,44 @@ public Entity getEntity(String id) throws MyAppException {
 }
 ```
 The above code is very procedural and "go-to" like.
-We can use objects instead:
+
+Lets build the above exception control step by step using objects.
+
+We can start with **try/finally** statement.
+```java
+public Entity getEntity(String id) throws MyAppException {
+    try {
+        return entities.get(id);
+    //...
+    } finally {
+        LOGGER.info("Attempt to fetch entity");
+    }
+}
+```
+Using objects:
+```java
+public Entity getEntity(String id) throws IOException {
+    return
+        new Try()
+            .with(new Finally(() -> LOGGER.info("Attempt to fetch entity")))
+            .exec(() -> entities.get(id));
+}
+```
+Notice that the above method is now throwing IOException. That is because we did not
+specify what kind of exception Try object will throw.
+So lets specify it:
+```java
+public Entity getEntity(String id) throws MyAppException {
+    return
+        new Try()
+            .with(
+                new Finally(() -> LOGGER.info("Attempt to fetch entity")),
+                new Throws(MyAppException::new)
+             )
+            .exec(() -> entities.get(id));
+}
+```
+Add the catch statements to make full **try/catch/finally** exception control:
 ```java
 public Entity getEntity(String id) throws MyAppException {
     return
@@ -46,14 +82,7 @@ public Entity getEntity(String id) throws MyAppException {
             new Throws(MyAppException::new)
         ).exec(() -> entities.get(id));
 ```
-Declared Throws instance maps any checked exception to MyAppException and specified
-runtime exceptions (ValidationException and IllegalStateException) to MyAppException. Exceptions like NullPointerException etc... are not mapped.
 
-### Try/Finally
-```java
-new Try().with(new Finally(() -> LOGGER.info("message")))
-         .exec(() -> doSomething());
-```
 ### Unchecked exception handling
 There are two ways to avoid throwing checked exceptions:
 ```java
@@ -86,14 +115,14 @@ public Entity getEntity(String id) {
 ```java
 public class MyApp {
 
-    private final Checkable<MyAppException> checkable;
+    private final TryBlock block;
 
-    public MyApp(Checkable<MyAppException> checkable) {
-        this.checkable = checkable;
+    public MyApp(final TryBlock blk) {
+        this.block = blk;
     }
 
     public Entity getEntity(String id) throws MyAppException{
-        return this.checkable.exec(() -> entities.get(id));
+        return this.block.exec(() -> entities.get(id));
     }
 }
 ```
