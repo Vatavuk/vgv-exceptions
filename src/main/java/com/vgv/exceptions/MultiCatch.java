@@ -28,6 +28,9 @@ import org.cactoos.list.ListOf;
 
 /**
  * Multiple catch blocks.
+ *
+ * <p>There is no thread-safety guarantee.
+ *
  * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0
@@ -58,7 +61,6 @@ public final class MultiCatch implements CatchBlocks {
     @Override
     public void handle(final Exception exception) {
         new ListOf<>(this.blocks).stream()
-            .filter(block -> block.supports(exception))
             .min(
                 Comparator.comparing(
                     block -> block.inheritanceDistance(exception)

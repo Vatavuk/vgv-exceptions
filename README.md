@@ -1,3 +1,4 @@
+# Vgv-exceptions
 Java library for object oriented exception handling.
 Library converts try/catch/finally statements into reusable objects.
 
@@ -14,7 +15,7 @@ public Entity getEntity(String id) throws MyAppException {
     } catch(DatabaseException exp) {
         LOGGER.error("Database exception message", e);
         throw new MyAppException(e);
-    } catch(ValidationException | IllegalStateException exp) {
+    } catch(ValidationRuntimeException | IllegalStateException exp) {
         LOGGER.error("Validation exception message", e);
         throw new MyAppException(e);
     } finally {
@@ -22,10 +23,6 @@ public Entity getEntity(String id) throws MyAppException {
     }
 }
 ```
-Checked exceptions: MyAppException, ClientException and DatabaseException
-
-Runtime exceptions: ValidationException, IllegalStateException
-
 The above code is very procedural and "go-to" like.
 We can use objects instead:
 ```java
@@ -41,7 +38,7 @@ public Entity getEntity(String id) throws MyAppException {
                 exp -> LOGGER.error("Database exception meassage", e)
             ),
             new Catch(
-                new Array<>(ValidationException.class, IllegalStateException.class),
+                new ListOf<>(ValidationRuntimeException.class, IllegalStateException.class),
                 exp -> LOGGER.error("Validation exception meassage", e)
             )
         ).with(

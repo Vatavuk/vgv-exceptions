@@ -38,7 +38,7 @@ import java.io.UncheckedIOException;
 public final class UncheckedTry implements TryBlock {
 
     /**
-     * Checkable origin.
+     * Try block origin.
      */
     private final TryBlock origin;
 

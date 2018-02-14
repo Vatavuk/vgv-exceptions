@@ -32,6 +32,7 @@ import org.cactoos.list.ListOf;
  * Exception handling in catch block.
  *
  * <p>There is no thread-safety guarantee.
+ *
  * @author Vedran Grgo Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0
@@ -44,7 +45,7 @@ public final class Catch implements CatchBlock {
     private final Iterable<Class<?>> classes;
 
     /**
-     * List of consumer that handles exceptions.
+     * Consumer that handles exception.
      */
     private final Consumer<Exception> consumer;
 

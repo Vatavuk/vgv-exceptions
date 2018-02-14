@@ -27,13 +27,17 @@ import org.cactoos.Scalar;
 
 /**
  * Compares two classes and calculates inheritance distance between them.
- * 0 -> full match. (matching IOException with IOException)
- * 1 -> one inheritance level. (matching IOException with
- * FileNotFoundException)
- * 2 -> two inheritance levels. (matching Exception with
- * FileNotFoundException)
- * ...
- * 999 -> no match. (matching IOException with RuntimeException)
+ *
+ *   0 -> full match. (matching IOException with IOException)
+ *   1 -> one inheritance level. (matching FileNotFoundException with
+ *        IOException)
+ *   2 -> two inheritance levels. (matching FileNotFoundException with
+ *        Exception)
+ *   ...
+ *   999 -> no match. (matching FileNotFoundException with RuntimeException)
+ *
+ * * <p>This class is thread safe.
+ *
  * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0
@@ -91,21 +95,21 @@ public final class InheritanceDistance implements Scalar<Integer> {
     }
 
     /**
-     * Relationship level matching.
+     * Inheritance distance matching.
      */
     public static final class Match implements Scalar<Boolean> {
 
         /**
-         * Relationship level.
+         * Inheritance distance.
          */
         private final int val;
 
         /**
          * Ctor.
-         * @param level Relationship level
+         * @param distance Inheritance distance
          */
-        public Match(final int level) {
-            this.val = level;
+        public Match(final int distance) {
+            this.val = distance;
         }
 
         @Override

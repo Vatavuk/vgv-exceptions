@@ -49,12 +49,12 @@ public interface CatchBlock {
      * Calculates inheritance distance between throwed exception and exception
      * specified in catch block.
      *    0 -> full match. (matching IOException with IOException)
-     *    1 -> one inheritance level. (matching IOException with
-     *        FileNotFoundException)
-     *    2 -> two inheritance levels. (matching Exception with
-     *        FileNotFoundException)
+     *    1 -> one inheritance level. (matching FileNotFoundException with
+     *         IOException)
+     *    2 -> two inheritance levels. (matching FileNotFoundException with
+     *         Exception)
      *    ...
-     *  999 -> no match. (matching IOException with RuntimeException)
+     *  999 -> no match. (matching FileNotFoundException with RuntimeException)
      * @param exception Exception
      * @return Int Distance
      */

@@ -39,7 +39,7 @@ public interface FinallyBlock {
 
     /**
      * Execute it.
-     * @throws Exception Exception
+     * @throws Exception If fails
      */
     void exec() throws Exception;
 }

@@ -38,16 +38,16 @@ import java.io.UncheckedIOException;
 public final class UncheckedFinally implements FinallyBlock {
 
     /**
-     * Original void proc.
+     * Original finally block.
      */
     private final FinallyBlock origin;
 
     /**
      * Ctor.
-     * @param proc Encapsulated func
+     * @param fnly Finally block
      */
-    public UncheckedFinally(final FinallyBlock proc) {
-        this.origin = proc;
+    public UncheckedFinally(final FinallyBlock fnly) {
+        this.origin = fnly;
     }
 
     @Override

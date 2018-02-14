@@ -145,6 +145,8 @@ public final class Try implements TryBlock {
 
     /**
      * TryBlock with additional handling of finally block.
+     *
+     * <p>There is no thread-safety guarantee.
      */
     private static final class WithFinally implements TryBlock {
 
@@ -191,7 +193,10 @@ public final class Try implements TryBlock {
     }
 
     /**
-     * Exception control that throws specific exception.
+     * TryBlock that throws specific exception.
+     *
+     * <p>There is no thread-safety guarantee.
+     *
      * @param <E> Exception
      */
     private static final class WithThrows<E extends Exception> implements
@@ -276,6 +281,9 @@ public final class Try implements TryBlock {
 
     /**
      * TryBlock object with additional finally/throws functionality.
+     *
+     * <p>There is no thread-safety guarantee.
+     *
      * @param <E> Exception
      */
     private static final class WithThrowsFinally<E extends Exception> implements

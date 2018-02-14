@@ -26,7 +26,7 @@ package com.vgv.exceptions;
 import java.util.function.Function;
 
 /**
- * Specifies which exception will be thrown by {@link CatchBlock}.
+ * Specifies which exception will be thrown by {@link TryBlock}.
  *
  * <p>There is no thread-safety guarantee.
  *
