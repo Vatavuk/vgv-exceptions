@@ -23,8 +23,6 @@
  */
 package com.vgv.exceptions;
 
-import org.cactoos.Scalar;
-
 /**
  * Compares two classes and calculates inheritance distance between them.
  *
@@ -42,7 +40,7 @@ import org.cactoos.Scalar;
  * @version $Id$
  * @since 1.0
  */
-public final class InheritanceDistance implements Scalar<Integer> {
+public final class CompareClasses {
 
     /**
      * Level that specifies that two classes are identical.
@@ -69,16 +67,19 @@ public final class InheritanceDistance implements Scalar<Integer> {
      * @param from From
      * @param towards To
      */
-    public InheritanceDistance(final Class<?> from, final Class<?> towards) {
+    public CompareClasses(final Class<?> from, final Class<?> towards) {
         this.base = from;
         this.comparing = towards;
     }
 
-    @Override
+    /**
+     * Inheritance distance between two classes.
+     * @return Integer Value
+     */
     public Integer value() {
-        int factor = InheritanceDistance.NO_MATCH;
+        int factor = CompareClasses.NO_MATCH;
         if (this.comparing.equals(this.base)) {
-            factor = InheritanceDistance.FULL_MATCH;
+            factor = CompareClasses.FULL_MATCH;
         } else {
             Class<?> sclass = this.base.getSuperclass();
             int idx = 0;
@@ -95,9 +96,17 @@ public final class InheritanceDistance implements Scalar<Integer> {
     }
 
     /**
+     * Check if classes are identical.
+     * @return Boolean Boolean
+     */
+    public Boolean identical() {
+        return this.value() == CompareClasses.FULL_MATCH;
+    }
+
+    /**
      * Inheritance distance matching.
      */
-    public static final class Match implements Scalar<Boolean> {
+    public static final class DistanceMatch {
 
         /**
          * Inheritance distance.
@@ -108,13 +117,42 @@ public final class InheritanceDistance implements Scalar<Integer> {
          * Ctor.
          * @param distance Inheritance distance
          */
-        public Match(final int distance) {
+        public DistanceMatch(final int distance) {
             this.val = distance;
         }
 
-        @Override
+        /**
+         * Check if distance is in matching interval.
+         * @return Boolean Boolean
+         */
         public Boolean value() {
-            return this.val < InheritanceDistance.NO_MATCH;
+            return this.val < CompareClasses.NO_MATCH;
+        }
+    }
+
+    /**
+     * Value for classes that.
+     */
+    public static final class NoMatch {
+
+        /**
+         * Value.
+         */
+        private final Integer val;
+
+        /**
+         * Ctor.
+         */
+        public NoMatch() {
+            this.val = CompareClasses.NO_MATCH;
+        }
+
+        /**
+         * Returns value that represents no matching.
+         * @return Integer Value
+         */
+        public Integer value() {
+            return this.val;
         }
     }
 }

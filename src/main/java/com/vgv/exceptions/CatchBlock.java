@@ -58,5 +58,5 @@ public interface CatchBlock {
      * @param exception Exception
      * @return Int Distance
      */
-    int inheritanceDistance(Exception exception);
+    int distance(Exception exception);
 }

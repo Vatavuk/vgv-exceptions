@@ -63,7 +63,7 @@ public final class MultiCatch implements CatchBlocks {
         new ListOf<>(this.blocks).stream()
             .min(
                 Comparator.comparing(
-                    block -> block.inheritanceDistance(exception)
+                    block -> block.distance(exception)
                 )
             )
             .ifPresent(block -> block.handle(exception));

@@ -23,7 +23,6 @@
  */
 package com.vgv.exceptions;
 
-import java.io.Serializable;
 import java.util.Comparator;
 import java.util.function.Consumer;
 import org.cactoos.list.ListOf;
@@ -81,36 +80,20 @@ public final class Catch implements CatchBlock {
 
     @Override
     public boolean supports(final Exception exception) {
-        return new InheritanceDistance.Match(
-            this.inheritanceDistance(exception)
+        return new CompareClasses.DistanceMatch(
+            this.distance(exception)
         ).value();
     }
 
     @Override
-    public int inheritanceDistance(final Exception exception) {
+    public int distance(final Exception exception) {
         return new ListOf<>(this.classes).stream()
             .map(
-                cls -> new InheritanceDistance(
+                cls -> new CompareClasses(
                     exception.getClass(), cls
                 ).value()
             )
-            .min(new Catch.Compared()).get();
-    }
-
-    /**
-     * Compared.
-     */
-    private static final class Compared implements Comparator<Integer>,
-        Serializable {
-
-        /**
-         * Serial version.
-         */
-        private static final long serialVersionUID = 914077573720438357L;
-
-        @Override
-        public int compare(final Integer left, final Integer right) {
-            return Integer.compare(left, right);
-        }
+            .min(Comparator.comparing(dist -> dist))
+            .orElse(new CompareClasses.NoMatch().value());
     }
 }

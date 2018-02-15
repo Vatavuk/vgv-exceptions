@@ -196,7 +196,6 @@ public final class Try implements TryBlock {
      * TryBlock that throws specific exception.
      *
      * <p>There is no thread-safety guarantee.
-     *
      * @param <E> Exception
      */
     private static final class WithThrows<E extends Exception> implements
@@ -241,13 +240,13 @@ public final class Try implements TryBlock {
                 // @checkstyle IllegalCatchCheck (1 line)
             } catch (final RuntimeException exception) {
                 if (this.blocks.supports(exception)) {
-                    this.handle(exception);
+                    this.handleAndThrow(exception);
                 }
                 throw exception;
                 // @checkstyle IllegalCatchCheck (1 line)
             } catch (final Exception exception) {
                 this.blocks.handle(exception);
-                throw this.fun.apply(exception);
+                throw this.transformedException(exception);
             }
         }
 
@@ -259,12 +258,12 @@ public final class Try implements TryBlock {
                 // @checkstyle IllegalCatchCheck (1 line)
             } catch (final RuntimeException exception) {
                 if (this.blocks.supports(exception)) {
-                    this.handle(exception);
+                    this.handleAndThrow(exception);
                 }
                 throw exception;
                 // @checkstyle IllegalCatchCheck (1 line)
             } catch (final Exception exception) {
-                this.handle(exception);
+                this.handleAndThrow(exception);
             }
         }
 
@@ -273,9 +272,29 @@ public final class Try implements TryBlock {
          * @param exception Exception
          * @throws E Exception
          */
-        private void handle(final Exception exception) throws E {
+        private void handleAndThrow(final Exception exception) throws E {
             this.blocks.handle(exception);
-            throw this.fun.apply(exception);
+            throw this.transformedException(exception);
+        }
+
+        /**
+         * Transformed exception.
+         * @param exception Exception
+         * @return E Exception
+         */
+        @SuppressWarnings("unchecked")
+        private E transformedException(final Exception exception) {
+            final Exception transformed = this.fun.apply(exception);
+            final Exception result;
+            if (
+                new CompareClasses(
+                    transformed.getClass(), exception.getClass()
+                ).identical()) {
+                result = exception;
+            } else {
+                result = transformed;
+            }
+            return (E) result;
         }
     }
 
@@ -283,7 +302,6 @@ public final class Try implements TryBlock {
      * TryBlock object with additional finally/throws functionality.
      *
      * <p>There is no thread-safety guarantee.
-     *
      * @param <E> Exception
      */
     private static final class WithThrowsFinally<E extends Exception> implements

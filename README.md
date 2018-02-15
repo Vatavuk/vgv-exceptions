@@ -68,11 +68,14 @@ public Entity getEntity(String id) throws MyAppException {
         new Try()
             .with(
                 new Finally(() -> LOGGER.info("Attempt to fetch entity")),
-                new Throws(MyAppException::new)
+                new Throws(exp -> new MyAppException(exp))
              )
             .exec(() -> entities.get(id));
 }
 ```
+All checked exceptions will be wrapped to MyAppException.
+Runtime exceptions such as NullPointerExceptions etc will be thrown as is.
+
 Finally add the catch statements to make full **try/catch/finally** exception control:
 ```java
 public Entity getEntity(String id) throws MyAppException {

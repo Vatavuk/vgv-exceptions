@@ -29,12 +29,12 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
- * Test case for {@link InheritanceDistance}.
+ * Test case for {@link CompareClasses}.
  * @author Vedran Vatavuk (123vgv@gmail.com)
  * @version $Id$
  * @since 1.0
  */
-public final class InheritanceDistanceTest {
+public final class CompareClassesTest {
 
     /**
      * Calculates relationship distance between two classes.
@@ -44,7 +44,7 @@ public final class InheritanceDistanceTest {
     public void calculatesRelationshipDistance() {
         final int expected = 2;
         MatcherAssert.assertThat(
-            new InheritanceDistance(
+            new CompareClasses(
                 FileNotFoundException.class, Exception.class
             ).value(),
             Matchers.equalTo(expected)
@@ -59,7 +59,7 @@ public final class InheritanceDistanceTest {
     public void classesAreNotRelated() {
         final int expected = 999;
         MatcherAssert.assertThat(
-            new InheritanceDistance(
+            new CompareClasses(
                 FileNotFoundException.class, RuntimeException.class
             ).value(),
             Matchers.equalTo(expected)
@@ -74,7 +74,7 @@ public final class InheritanceDistanceTest {
     public void classesAreIdentical() {
         final int expected = 0;
         MatcherAssert.assertThat(
-            new InheritanceDistance(
+            new CompareClasses(
                 FileNotFoundException.class, FileNotFoundException.class
             ).value(),
             Matchers.equalTo(expected)
