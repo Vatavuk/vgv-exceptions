@@ -9,7 +9,7 @@ Latest version [here](https://github.com/Vatavuk/vgv-exceptions/releases)
 <dependency>
     <groupId>hr.com.vgv</groupId>
     <artifactId>vgv-exceptions</artifactId>
-    <version>1.0</version>
+    <version>1.2</version>
 </dependency>
 ```
 
