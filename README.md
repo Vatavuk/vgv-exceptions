@@ -37,46 +37,7 @@ public Entity getEntity(String id) throws MyAppException {
 ```
 The above code is very procedural and "go-to" like.
 
-Lets build the above exception control step by step using objects.
-
-We can start with **try/finally** statement.
-```java
-public Entity getEntity(String id) throws MyAppException {
-    try {
-        return entities.get(id);
-    //...
-    } finally {
-        LOGGER.info("Attempt to fetch entity");
-    }
-}
-```
-Using objects:
-```java
-public Entity getEntity(String id) throws IOException {
-    return
-        new Try()
-            .with(new Finally(() -> LOGGER.info("Attempt to fetch entity")))
-            .exec(() -> entities.get(id));
-}
-```
-Notice that the above method is now throwing IOException. That is because we did not
-specify what kind of exception Try object will throw.
-So lets specify it:
-```java
-public Entity getEntity(String id) throws MyAppException {
-    return
-        new Try()
-            .with(
-                new Finally(() -> LOGGER.info("Attempt to fetch entity")),
-                new Throws(exp -> new MyAppException(exp))
-             )
-            .exec(() -> entities.get(id));
-}
-```
-All checked exceptions will be wrapped to MyAppException.
-Runtime exceptions such as NullPointerExceptions etc will be thrown as is.
-
-Finally add the catch statements to make full **try/catch/finally** exception control:
+We can use objects instead:
 ```java
 public Entity getEntity(String id) throws MyAppException {
     return
