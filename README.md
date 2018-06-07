@@ -5,6 +5,8 @@ This library was used as a POC for object-oriented exception handling in [cactoo
 Please refer to that project. Exception handling functionallity is implemented in `CheckedScalar`/`ScalarWithFallback` and
 related `Checked*` classes.
 
+More details in the [discussion](https://github.com/yegor256/cactoos/issues/656) 
+
 **How to use**.
 Latest version [here](https://github.com/Vatavuk/vgv-exceptions/releases)
 
