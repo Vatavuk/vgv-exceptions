@@ -1,6 +1,9 @@
 # Vgv-exceptions
-Java library for object oriented exception handling.
-Library converts try/catch/finally statements into reusable objects.
+
+### UPDATE:
+This library was used as a POC for object-oriented exception handling in [cactoos](https://github.com/yegor256/cactoos).
+Please refer to that project. Exception handling functionallity is implemented in `CheckedScalar`/`ScalarWithFallback` and
+related `Checked*` classes.
 
 **How to use**.
 Latest version [here](https://github.com/Vatavuk/vgv-exceptions/releases)
